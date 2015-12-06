@@ -7,30 +7,34 @@ use SteamCondenser\Servers\SourceServer;
 class serverstatistics {
 	public $dev_mode = true;
 	public  $module = "default";
-	private $serverList = array();
-	private $serverList_CacheTime = 0;
-	private $serverList_UpdateInterval = 1800;
+	protected $serverList = array();
+	protected $serverList_CacheTime = 0;
+	protected $serverList_UpdateInterval = 1800;
 
-	private $serverBlackList = array();
+	protected $serverBlackList = array();
 
-	private $graphite_data = array();
-	private $graphite_host = "localhost";
-	private $graphite_port = "2003";
+	protected $graphite_data = array();
+	protected $graphite_host = "localhost";
+	protected $graphite_port = "2003";
 	
-	private $update_time = 0;
-	private $sleeptime = 0;
+	protected $update_time = 0;
+	protected $sleeptime = 0;
 
-	private $update_startTime = 0;
-	private $update_endTime = 0;
-	private $update_Interval = 300;
+	protected $update_startTime = 0;
+	protected $update_endTime = 0;
+	protected $update_Interval = 300;
 
-	private $consoleStats = array();
-	public $serverByCategory = array();
-	private $ServerPlayerCount = array();
-	private $ServerMapCount = array();
-	private $ServerVersionCount = array();
-	private $ServerModCount = array();
-	private $ServerCountryCount = array();
+	// Generic
+	protected $ServerPlayerCount = array();
+	protected $ServerMapCount = array();
+
+	protected $ServerCountryCount = array();
+
+	// ns2 specific
+	#protected $consoleStats = array();
+	#protected $ServerVersionCount = array();
+	#protected $ServerModCount = array();
+
 
 	public $masterlistQuery = "\\appid\\4920";
 	#private $masterlistQuery = "\\appid\\4920\\empty\\1";
@@ -71,7 +75,7 @@ class serverstatistics {
 	}
 
 	// Servers by Country
-	private function setServerCountryCount($data) {
+	protected function setServerCountryCount($data) {
 		$country_code = geoip_country_code3_by_name($data['host']);
 
 		if (!array_key_exists($country_code, $this->ServerCountryCount['total'])) { $this->ServerCountryCount['total'][$country_code] = 0; }
@@ -89,7 +93,7 @@ class serverstatistics {
 
 	}
 
-	private function prepareServerCountryCount() {
+	protected function prepareServerCountryCount() {
 		foreach ($this->ServerCountryCount['total'] as $sm => $pc) {
 			$this->graphite_data[] = sprintf("server.%s.%s.%s %d %d",$this->module,'servercountrycount',$sm , $pc, $this->update_time);
 		}
@@ -102,47 +106,12 @@ class serverstatistics {
 		$this->ServerCountryCount = array();
 	}
 
-	// Server Popular mods
-	private function setServerModCount($data) {
-		foreach ($data['rules'] as $k => $v) {
-			if (preg_match("/^mods\[[\d]{1,}\]$/",$k,$m)) {
-				$smod = preg_split("/[\s]/",$v);
-				foreach ($smod as $modid) {
-					if (!array_key_exists($modid, $this->ServerModCount)) { $this->ServerModCount[$modid] = 0; }
-					$this->ServerModCount[$modid]++;
-				}
-			}
-		}
-	}
-	private function prepareServerModCount() {
-		foreach ($this->ServerModCount as $sm => $pc) {
-			$this->graphite_data[] = sprintf("server.%s.%s.mod_%s %d %d",$this->module,'servermodcount',$sm , $pc, $this->update_time);
-		}
-		$this->ServerModCount = array();
-	}	
-
-	// Server Verion Count
-	private function setServerVersionCount($data) {
-		$tags = explode("|",$data['info']['serverTags']);
-		if ($tags[0] > 1) {
-			if (!array_key_exists($tags[0], $this->ServerVersionCount)) { $this->ServerVersionCount[$tags[0]] = 0; }
-			$this->ServerVersionCount[$tags[0]]++;
-		}
-	}
-	private function prepareServerVersionCount() {
-		foreach ($this->ServerVersionCount as $sm => $pc) {
-			$this->graphite_data[] = sprintf("server.%s.%s.version_%d %d %d",$this->module,'serverversioncount',$sm , $pc, $this->update_time);
-
-		}
-		$this->ServerVersionCount = array();
-	}
-
 	// Server Player Count
-	private function setServerPlayerCount($data) {
+	protected function setServerPlayerCount($data) {
 		if (!array_key_exists($data['info']['maxPlayers'], $this->ServerPlayerCount)) { $this->ServerPlayerCount[$data['info']['maxPlayers']] = 0; }
 		$this->ServerPlayerCount[$data['info']['maxPlayers']]+= $data['info']['numberOfPlayers'];
 	}
-	private function prepareServerPlayerCount() {
+	protected function prepareServerPlayerCount() {
 		foreach ($this->ServerPlayerCount as $sm => $pc) {
 			$this->graphite_data[] = sprintf("server.%s.%s.slot_%d %d %d",$this->module,'serverplayercount',$sm , $pc, $this->update_time);
 
@@ -151,7 +120,7 @@ class serverstatistics {
 	}
 
 	// Server Map Count
-	private function setServerMapCount($data) {
+	protected function setServerMapCount($data) {
 		if ($data['info']['numberOfPlayers'] > 0) {
 			if (!array_key_exists($data['info']['mapName'], $this->ServerMapCount)) { $this->ServerMapCount[$data['info']['mapName']] = 0; }
 			$this->ServerMapCount[$data['info']['mapName']]+= 1;
@@ -159,7 +128,7 @@ class serverstatistics {
 			if (!array_key_exists($data['info']['mapName'], $this->ServerMapCount)) { $this->ServerMapCount[$data['info']['mapName']] = 0; }
 		}
 	}
-	private function prepareServerMapCount() {
+	protected function prepareServerMapCount() {
 		foreach ($this->ServerMapCount as $sm => $pc) {
 			$this->graphite_data[] = sprintf("server.%s.%s.map_%s %d %d",$this->module,'servermapcount',$sm , $pc, $this->update_time);
 
@@ -167,10 +136,13 @@ class serverstatistics {
 		$this->ServerMapCount = array();
 	}
 
+	protected function setGameSpecificStats($data) {}
+	
+	protected function prepareGameSpecificStats() {}
+
 	public function run_main() {
 			$this->update_startTime = $this->update_time = time();
 			$this->consoleStats = array();
-			$this->clearSeverbyCategory();
 
 			// Update master list
 			if ((time() - $this->serverList_CacheTime) > $this->serverList_UpdateInterval) {
@@ -188,30 +160,32 @@ class serverstatistics {
 				if (($serverDetails = $this->getDetails($srv[0],$srv[1])) !== FALSE) {
 					print sprintf("Debug: Found [%s] [%s] [%d/%d]\n",$serverDetails['info']['serverName'], $serverDetails['info']['mapName'],$serverDetails['info']['numberOfPlayers'],$serverDetails['info']['maxPlayers']);
 					
-					$this->sortServerbyCategory($serverDetails);
-
 					// Direct graphable
 					$this->prepareGraphdata($serverDetails);
-					$this->sendGraphdata();
 
 					// Collect stats
 					$this->setServerPlayerCount($serverDetails);
 					$this->setServerMapCount($serverDetails);
-					$this->setServerVersionCount($serverDetails);
-					$this->setServerModCount($serverDetails);
+					$this->setServerCountryCount($serverDetails);
 					$this->consoleStats($serverDetails);
-					$this->setServerCountryCount($serverDetails);				
+
+					$this->setGameSpecificStats($serverDetails);
+					$this->sendGraphdata();
+
 				} else {
 					$this->addBlacklist($srv[0],$srv[1]);
 				}
 			}
 			// All stats gathered, prepare then send
 	
+			// Generic
 			$this->prepareServerPlayerCount();
 			$this->prepareServerMapCount();
-			$this->prepareServerVersionCount();
-			$this->prepareServerModCount();
 			$this->prepareServerCountryCount();
+
+			// Game Specific
+			$this->prepareGameSpecificStats();
+
 
 			$this->sendGraphdata();
 
@@ -234,27 +208,25 @@ class serverstatistics {
 				print "Debug: we need to sleep for: ".$this->sleeptime." sec\n\n";
 			}
 			
-			// debug
-			#print_r($this->serverByCategory);	
 	}
 
 
 
-	private function onBlacklist($host,$port) {
+	protected function onBlacklist($host,$port) {
 		$value = $host.":".$port;
 		if (in_array($value,$this->serverBlackList)) {
 			print "Debug: skipping server $value because its on the blacklist\n";
 			return True;
 		} else { return False; }
 	}		
-	private function addBlacklist($host,$port) {
+	protected function addBlacklist($host,$port) {
 		$value = $host.":".$port;
 		if (!in_array($value,$this->serverBlackList)) {
 			$this->serverBlackList[] = $value;
 			print "Debug: Server $value has been added to the blacklist\n";
 		}
 	}
-	private function clearBlacklist() {
+	protected function clearBlacklist() {
 		$this->serverBlackList = array();
 	}
 
@@ -286,64 +258,9 @@ class serverstatistics {
 		$this->graphite_data[] = sprintf("server.%s.%s.%s.%s %d %d",$this->module,$host,$port,'numberOfPlayers', $data['info']['numberOfPlayers'], $dtime);
 		$this->graphite_data[] = sprintf("server.%s.%s.%s.%s %d %d",$this->module,$host,$port,'maxPlayers', $data['info']['maxPlayers'], $dtime);
 		$this->graphite_data[] = sprintf("server.%s.%s.%s.%s %d %d",$this->module,$host,$port,'botNumber', $data['info']['botNumber'], $dtime);
-
-		/* Server Rules */
-		$this->graphite_data[] = sprintf("server.%s.%s.%s.%s %d %d",$this->module,$host,$port,'ent_count', $data['rules']['ent_count'], $dtime);
-		$this->graphite_data[] = sprintf("server.%s.%s.%s.%s %d %d",$this->module,$host,$port,'tickrate', $data['rules']['tickrate'], $dtime);
-
-		/* Define serverTags */
-		$tags = explode("|",$data['info']['serverTags']);
-		#print_r($tags);
-		/*
-			Array
-			(
-			    [0] => 277
-			    [1] => ns2
-			    [2] => M
-			    [3] => 149
-			    [4] => 34
-			    [5] => 34
-			    [6] => 32
-			    [7] => CHUD_0x0
-			    [8] => P_S2592
-			    [9] => shine
-			    [10] => NSL
-			    [11] => ServerTickrate30
-			    [12] => tickrate_29
-			)
-			modded?|tickrate|currentPerfScore|PerfScorewithQuality|perfQuality
-		*/
-		
-		$this->graphite_data[] = sprintf("server.%s.%s.%s.%s %d %d",$this->module,$host,$port,'version', $tags[0], $dtime);
-		$this->graphite_data[] = sprintf("server.%s.%s.%s.%s %d %d",$this->module,$host,$port,'real_tickrate', $tags[3], $dtime);
-		$this->graphite_data[] = sprintf("server.%s.%s.%s.%s %d %d",$this->module,$host,$port,'currentPerfScore', $tags[4], $dtime);
-		$this->graphite_data[] = sprintf("server.%s.%s.%s.%s %d %d",$this->module,$host,$port,'PerfScorewithQuality', $tags[5], $dtime);
-		$this->graphite_data[] = sprintf("server.%s.%s.%s.%s %d %d",$this->module,$host,$port,'perfQuality', $tags[6], $dtime);
-
-		// Todo: mods
-		
+	
 	}
 	
-	public function sortServerbyCategory($data) {
-		$tags = explode("|",$data['info']['serverTags']);
-		foreach ($tags as $tag) {
-			switch($tag) {
-				case 'NSL':
-					$category = 'NSL';
-					break;
-				case 'rookie':
-					$category = 'rookie';
-					break;
-				default:
-					$category = 'normal';
-			}
-		}
-		$this->serverByCategory[$category][] = array('name'=>$data['info']['serverName'],'host'=>$data['host'],'port'=>$data['port']);
-	}
-	public function clearSeverbyCategory() {
-		$this->serverByCategory = array();
-	}
-
 	public function getServers() {
 		$master = new MasterServer(MasterServer::SOURCE_MASTER_SERVER);
 		$this->serverList = $servers = $master->getServers(MasterServer::REGION_ALL,$this->masterlistQuery , true );
