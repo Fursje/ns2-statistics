@@ -4,15 +4,9 @@ require __DIR__ . '/vendor/autoload.php';
 use SteamCondenser\Servers\MasterServer;
 use SteamCondenser\Servers\SourceServer;
 
-
-$ns2 = new server_ns2();
-#$ns2->run_daemon();
-$ns2->run_once();
-
-
-class server_ns2 {
+class serverstatistics {
 	public $dev_mode = true;
-	private $module = "ns2";
+	public  $module = "default";
 	private $serverList = array();
 	private $serverList_CacheTime = 0;
 	private $serverList_UpdateInterval = 1800;
@@ -36,8 +30,9 @@ class server_ns2 {
 	private $ServerMapCount = array();
 	private $ServerVersionCount = array();
 	private $ServerModCount = array();
+	private $ServerCountryCount = array();
 
-	private $masterlistQuery = "\\appid\\4920";
+	public $masterlistQuery = "\\appid\\4920";
 	#private $masterlistQuery = "\\appid\\4920\\empty\\1";
 
 
@@ -75,6 +70,38 @@ class server_ns2 {
 		}
 	}
 
+	// Servers by Country
+	private function setServerCountryCount($data) {
+		$country_code = geoip_country_code3_by_name($data['host']);
+
+		if (!array_key_exists($country_code, $this->ServerCountryCount['total'])) { $this->ServerCountryCount['total'][$country_code] = 0; }
+		$this->ServerCountryCount['total'][$country_code]++;
+		
+		if ($data['info']['numberOfPlayers'] > 0) {
+			if (!array_key_exists($country_code, $this->ServerCountryCount['active_players'])) { $this->ServerCountryCount['active_players'][$country_code] = 0; }
+			$this->ServerCountryCount['active_players'][$country_code]++;
+		}
+
+		if ($data['info']['numberOfPlayers'] > 0) {
+			if (!array_key_exists($country_code, $this->ServerCountryCount['player_count'])) { $this->ServerCountryCount['player_count'][$country_code] = 0; }
+			$this->ServerCountryCount['player_count'][$country_code]+= $data['info']['numberOfPlayers'];
+		}
+
+	}
+
+	private function prepareServerCountryCount() {
+		foreach ($this->ServerCountryCount['total'] as $sm => $pc) {
+			$this->graphite_data[] = sprintf("server.%s.%s.%s %d %d",$this->module,'servercountrycount',$sm , $pc, $this->update_time);
+		}
+		foreach ($this->ServerCountryCount['active_players'] as $sm => $pc) {
+			$this->graphite_data[] = sprintf("server.%s.%s.%s %d %d",$this->module,'servercountryactivecount',$sm , $pc, $this->update_time);
+		}
+		foreach ($this->ServerCountryCount['player_count'] as $sm => $pc) {
+			$this->graphite_data[] = sprintf("server.%s.%s.%s %d %d",$this->module,'servercountryplayercount',$sm , $pc, $this->update_time);
+		}
+		$this->ServerCountryCount = array();
+	}
+
 	// Server Popular mods
 	private function setServerModCount($data) {
 		foreach ($data['rules'] as $k => $v) {
@@ -97,8 +124,10 @@ class server_ns2 {
 	// Server Verion Count
 	private function setServerVersionCount($data) {
 		$tags = explode("|",$data['info']['serverTags']);
-		if (!array_key_exists($tags[0], $this->ServerVersionCount)) { $this->ServerVersionCount[$tags[0]] = 0; }
-		$this->ServerVersionCount[$tags[0]]++;
+		if ($tags[0] > 1) {
+			if (!array_key_exists($tags[0], $this->ServerVersionCount)) { $this->ServerVersionCount[$tags[0]] = 0; }
+			$this->ServerVersionCount[$tags[0]]++;
+		}
 	}
 	private function prepareServerVersionCount() {
 		foreach ($this->ServerVersionCount as $sm => $pc) {
@@ -170,7 +199,8 @@ class server_ns2 {
 					$this->setServerMapCount($serverDetails);
 					$this->setServerVersionCount($serverDetails);
 					$this->setServerModCount($serverDetails);
-					$this->consoleStats($serverDetails);					
+					$this->consoleStats($serverDetails);
+					$this->setServerCountryCount($serverDetails);				
 				} else {
 					$this->addBlacklist($srv[0],$srv[1]);
 				}
@@ -181,6 +211,7 @@ class server_ns2 {
 			$this->prepareServerMapCount();
 			$this->prepareServerVersionCount();
 			$this->prepareServerModCount();
+			$this->prepareServerCountryCount();
 
 			$this->sendGraphdata();
 
@@ -229,6 +260,7 @@ class server_ns2 {
 
 	public function sendGraphdata() {
 		if ($this->dev_mode == True) {
+			print_r($this->graphite_data);
 			$this->graphite_data = array();
 			return;
 		}
