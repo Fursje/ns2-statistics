@@ -28,15 +28,9 @@ class serverstatistics {
 	protected $ServerPlayerCount = array();
 	protected $ServerMapCount = array();
 
-	protected $ServerCountryCount = array();
+	protected $ServerCountryCount = array('total'=>0, 'active_players'=>0, 'player_count'=>0);
 
-	// ns2 specific
-	#protected $consoleStats = array();
-	#protected $ServerVersionCount = array();
-	#protected $ServerModCount = array();
-
-
-	public $masterlistQuery = "\\appid\\4920";
+	protected $masterlistQuery = "\\appid\\4920";
 	#private $masterlistQuery = "\\appid\\4920\\empty\\1";
 
 
