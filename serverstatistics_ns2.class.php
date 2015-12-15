@@ -18,7 +18,6 @@ class serverstatistics_ns2 extends serverstatistics {
 
 	protected function setGameSpecificStats($data) {
 		$this->prepareNS2ServerSpecific($data);
-
 		$this->setServerModCount($data);
 		$this->setServerVersionCount($data);
 		$this->sortServerbyCategory($data);
@@ -72,8 +71,12 @@ class serverstatistics_ns2 extends serverstatistics {
 		$port = $data['port'];
 		$dtime = $this->update_time;
 
-		$this->graphite_data[] = sprintf("server.%s.%s.%s.%s %d %d",$this->module,$host,$port,'ent_count', $data['rules']['ent_count'], $dtime);
-		$this->graphite_data[] = sprintf("server.%s.%s.%s.%s %d %d",$this->module,$host,$port,'tickrate', $data['rules']['tickrate'], $dtime);
+		if (array_key_exists('ent_count',$data['rules'])) {
+			$this->graphite_data[] = sprintf("server.%s.%s.%s.%s %d %d",$this->module,$host,$port,'ent_count', $data['rules']['ent_count'], $dtime);
+		}
+		if (array_key_exists('tickrate',$data['rules'])) {
+			$this->graphite_data[] = sprintf("server.%s.%s.%s.%s %d %d",$this->module,$host,$port,'tickrate', $data['rules']['tickrate'], $dtime);
+		}
 
 		/* Define serverTags */
 		$tags = explode("|",$data['info']['serverTags']);
