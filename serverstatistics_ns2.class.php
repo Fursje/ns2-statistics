@@ -11,6 +11,7 @@ class serverstatistics_ns2 extends serverstatistics {
 	protected $ServerModCount = array();
 	protected $ServerVersionCount = array();
 	protected $serverByCategory = array();
+	protected $serversModded = array('Modded'=>0,'Vanilla'=>0);
 
 	public $masterlistQuery = "\\appid\\4920";
 	#private $masterlistQuery = "\\appid\\4920\\empty\\1";
@@ -21,15 +22,42 @@ class serverstatistics_ns2 extends serverstatistics {
 		$this->setServerModCount($data);
 		$this->setServerVersionCount($data);
 		$this->sortServerbyCategory($data);
+		$this->setServersModded($data);
 	}
 	
 	protected function prepareGameSpecificStats() {
 		$this->prepareServerModCount();
 		$this->prepareServerVersionCount();
+		$this->prepareServerbyCategory();
+		$this->prepareServersModded();
 	}
 
 	/* Game Specific Functions */
 
+	// Modded vs unmodded
+	protected function setServersModded($data) {
+		if (array_key_exists('serverTags', $data['info'])) {
+			$tags = explode("|",$data['info']['serverTags']);
+			switch($tags[2]) {
+				case 'M':
+					$this->serversModded['Modded']++;
+					break;
+				case 'V':
+					$this->serversModded['Vanilla']++;
+					break;
+				default:
+					// should never happen..
+					break;
+			}
+		}
+	}
+	protected function prepareServersModded() {
+		foreach ($this->serversModded as $sm => $pc) {
+			$this->graphite_data[] = sprintf("server.%s.%s.%s %d %d",$this->module,'serversmodded',$sm , $pc, $this->update_time);
+		}
+		$this->serversModded = array('Modded'=>0,'Vanilla'=>0);
+	}
+	
 	// Server Popular mods
 	protected function setServerModCount($data) {
 		foreach ($data['rules'] as $k => $v) {
@@ -72,7 +100,8 @@ class serverstatistics_ns2 extends serverstatistics {
 		$dtime = $this->update_time;
 
 		if (array_key_exists('ent_count',$data['rules'])) {
-			$this->graphite_data[] = sprintf("server.%s.%s.%s.%s %d %d",$this->module,$host,$port,'ent_count', $data['rules']['ent_count'], $dtime);
+			$ent_count = (int) str_replace(",","",$data['rules']['ent_count']);
+			$this->graphite_data[] = sprintf("server.%s.%s.%s.%s %d %d",$this->module,$host,$port,'ent_count', $ent_count, $dtime);
 		}
 		if (array_key_exists('tickrate',$data['rules'])) {
 			$this->graphite_data[] = sprintf("server.%s.%s.%s.%s %d %d",$this->module,$host,$port,'tickrate', $data['rules']['tickrate'], $dtime);
@@ -111,19 +140,37 @@ class serverstatistics_ns2 extends serverstatistics {
 
 	public function sortServerbyCategory($data) {
 		$tags = explode("|",$data['info']['serverTags']);
+		#$this->print_cli('DEBUG-TAG', $data['info']['serverTags']);
+		$category = "_none_";
 		foreach ($tags as $tag) {
 			switch($tag) {
 				case 'NSL':
-					$category = 'NSL';
+					$category = 'nsl';
+					break;
+				case 'Siege':
+					$category = 'siege';
 					break;
 				case 'rookie':
 					$category = 'rookie';
-					break;
-				default:
-					$category = 'normal';
+					break;					
+				#default:
+				#	$category = 'normal';
 			}
+			if ($category != '_none_') { continue; }
 		}
+		if ($category == '_none_') { $category = 'normal'; }
+
 		$this->serverByCategory[$category][] = array('name'=>$data['info']['serverName'],'host'=>$data['host'],'port'=>$data['port']);
+	}
+	protected function prepareServerbyCategory() {
+		// Todo: generate dashboard by type
+		// Todo: graph type counts
+		foreach ($this->serverByCategory as $cat => $val) {
+			$amount = count($this->serverByCategory[$cat]);
+			$this->graphite_data[] = sprintf("server.%s.%s.%s %d %d",$this->module,'serverbycategory', $cat, $amount, $this->update_time);
+		}
+
+		$this->clearServerbyCategory();
 	}
 	public function clearServerbyCategory() {
 		$this->serverByCategory = array();

@@ -174,6 +174,7 @@ class serverstatistics {
 				$this->getServers();
 				$this->clearBlacklist();
 				#$this->serverList = array(array('188.63.57.183','27016'));
+				//$this->serverList = array(array('89.105.209.250','27021'));
 				//85.14.226.223:27016
 				//$this->serverList = array(array('85.14.226.223','27016'));
 			}
@@ -320,6 +321,7 @@ class serverstatistics {
 				}
 			}
 		}
+
 		try {
 			if ($getPlayers == True) {
 				$tmp_players = $serverData->getPlayers();
@@ -355,6 +357,10 @@ class serverstatistics {
 				}
 			}
 		}
+		//debug
+		#if ($host == '188.63.57.183' && $port == '27016') {
+		#	print_r($serverInfo);
+		#}		
 
 		// simple error check
 		if (empty($serverInfo['info']['mapName'])) {
