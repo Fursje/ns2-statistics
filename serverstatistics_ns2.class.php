@@ -16,6 +16,9 @@ class serverstatistics_ns2 extends serverstatistics {
 	public $masterlistQuery = "\\appid\\4920";
 	#private $masterlistQuery = "\\appid\\4920\\empty\\1";
 
+	protected $monitoring = False;
+	protected $jsonData = array();
+	protected $grafana = False;
 
 	protected function setGameSpecificStats($data) {
 		$this->prepareNS2ServerSpecific($data);
@@ -23,6 +26,8 @@ class serverstatistics_ns2 extends serverstatistics {
 		$this->setServerVersionCount($data);
 		$this->sortServerbyCategory($data);
 		$this->setServersModded($data);
+
+		$this->gatherData($data);
 	}
 	
 	protected function prepareGameSpecificStats() {
@@ -30,9 +35,85 @@ class serverstatistics_ns2 extends serverstatistics {
 		$this->prepareServerVersionCount();
 		$this->prepareServerbyCategory();
 		$this->prepareServersModded();
+
+		$this->saveData();
 	}
 
-	/* Game Specific Functions */
+	protected function saveData() {
+		$this->createDashboard();
+		print_r($this->jsonData);
+		$jsonData = json_encode($this->jsonData);
+		file_put_contents("site_data.json",$jsonData);
+	}
+
+	protected function createDashboard() {
+		if (!is_object($this->grafana)) {
+			require_once(__DIR__.'/grafana.class.php');
+			$this->grafana = new grafana();
+		}		
+
+		$id_counter = 1;
+
+		foreach ($this->jsonData as $host => $value) {
+			$panels = array();
+
+			$this->jsonData[$host]['graphs']['info_id'] = $id_counter;
+			$panels[] = $this->grafana->createPanel_ServerInfo($value['serverName'],$value['host'],$value['port'],$id_counter );
+			$id_counter++;
+
+			$this->jsonData[$host]['graphs']['perf_id'] = $id_counter;
+			$panels[] = $this->grafana->createPanel_ServerPerformance($value['serverName'],$value['host'],$value['port'],$id_counter);
+			$id_counter++;
+
+			$rows[] = $this->grafana->createRow($host, 250, $panels);
+		}
+
+		$dashboard = $this->grafana->prepareDashboardDefault('Natural Selection 2 - Servers (autogen)','natural-selection-2-servers-autogen',$rows);
+		$this->grafana->prepareDashboard($dashboard);
+
+		// some sort of change check so we dont upload a dash every 5min :P
+		$this->grafana->sendDashboard($dashboard['meta']['slug'].".json");
+
+	}
+
+	protected function gatherData($data) {
+		$key = sprintf("%s:%s",$data['host'],$data['port']);
+		$tags = explode("|",$data['info']['serverTags']);
+		$this->jsonData[$key] = array(
+			'host' => $data['host'],
+			'port' => $data['port'],
+			'serverName' => utf8_encode($data['info']['serverName']),
+			//'serverName' => "debug test",
+
+			'mapName' => $data['info']['mapName'],
+			'maxPlayers' => $data['info']['maxPlayers'],
+			'numberOfPlayers' => $data['info']['numberOfPlayers'],
+			'dedicated' => $data['info']['dedicated'],
+			'serverPort' => $data['info']['serverPort'],
+			'version' => $tags[0],
+			'graphs' => array('info_id'=>0,'perf_id'=>0)
+		);
+	}
+
+
+	/* Monitoring */
+	/*
+	private function _loadMonitoring() {
+		if (!is_object($this->monitoring)) {
+			require_once(__DIR__.'/monitoring_ns2.class.php');
+			$this->monitoring = new monitoring_ns2();
+		}
+	}
+
+	protected function updateMonitoring($host,$port,$details) {
+		$this->_loadMonitoring();
+		$monitoring->update($host,$port,$details,$this->update_time);
+	}	
+	*/
+
+
+
+	/* Game Specific Stats Functions */
 
 	// Modded vs unmodded
 	protected function setServersModded($data) {
@@ -72,7 +153,7 @@ class serverstatistics_ns2 extends serverstatistics {
 	}
 	protected function prepareServerModCount() {
 		foreach ($this->ServerModCount as $sm => $pc) {
-			$this->graphite_data[] = sprintf("server.%s.%s.mod_%s %d %d",$this->module,'servermodcount',$sm , $pc, $this->update_time);
+			$this->graphite_data[] = sprintf("server.%s.%s.%s %d %d",$this->module,'servermodcount',$sm , $pc, $this->update_time);
 		}
 		$this->ServerModCount = array();
 	}	
@@ -87,7 +168,7 @@ class serverstatistics_ns2 extends serverstatistics {
 	}
 	protected function prepareServerVersionCount() {
 		foreach ($this->ServerVersionCount as $sm => $pc) {
-			$this->graphite_data[] = sprintf("server.%s.%s.version_%d %d %d",$this->module,'serverversioncount',$sm , $pc, $this->update_time);
+			$this->graphite_data[] = sprintf("server.%s.%s.%d %d %d",$this->module,'serverversioncount',$sm , $pc, $this->update_time);
 
 		}
 		$this->ServerVersionCount = array();

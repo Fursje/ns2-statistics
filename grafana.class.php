@@ -6,6 +6,7 @@
 #$gr->prepareDashboard($nsldata);
 #$gr->sendDashboard($nsldata['meta']['slug'].".json");
 #$gr->json2array('ns2.json');
+#$gr->getDashboard("ns2-auto-gen","ns2-auto-gen-new.json");
 // panels -> rows -> dashboard
 class grafana {
 
@@ -15,11 +16,10 @@ class grafana {
 	public $bin_curl = "/usr/bin/curl";
 
 
-	public function prepareDashboard($data,$rows = array()) {
-		$data['dashboard']['rows'] = $rows;
+	public function prepareDashboard($data) {
 		$json = json_encode($data);
 		file_put_contents($data['meta']['slug'].".json",$json);
-		print_r($json);
+		#print_r($json);
 	}
 
 	public function getDashboard($dashboard,$saveFile) {
@@ -42,7 +42,7 @@ class grafana {
 		print_r($b);
 	}
 
-	public function prepareDashboardDefault($name,$slug,$id = null) {
+	public function prepareDashboardDefault($name,$slug,$rows, $id = null) {
 		$data = array();
 		$data['meta'] = array(
 			'type' => 'db',
@@ -63,7 +63,7 @@ class grafana {
 			'links' => array(),
 			'originalTitle' => $name,
 			'refresh' => '5m',
-			'rows' => array(), // will be filled by another function
+			'rows' => $rows, // will be filled by another function
 			'schemaVersion' => 7,
 			'sharedCrosshair' => false,
 			'style' => 'dark',
@@ -72,7 +72,7 @@ class grafana {
 				'list' => array(),
 			),
 			'time' => array(
-				'from' => 'now-24h',
+				'from' => 'now-7d',
 				'to' => 'now',
 			),
 			'timepicker' => array(
@@ -88,35 +88,41 @@ class grafana {
 			'title' => $name,
 			'version' => 0,
 		);
+		$data['overwrite'] = true;
+
 		return $data;
 	}
 	
-	public static function createRow($title = 'rowName', $height = 250) {
+	public static function createRow($title = 'rowName', $height = 250, $panels = array()) {
 		$data = array(
 			'editable' => true,
 			'height' => $height.'px',
-			'panels' => array(),
+			'panels' => $panels,
 			'title' => $title
 		);
 		return $data;
 	}
-	public static function createPanel_ServerInfo($name,$host,$port) {
+	public static function ip2field($ip) {
+		return str_replace(".","_",$ip);
+	}
+	public static function createPanel_ServerInfo($name,$host,$port, $id = null) {
+		$host = grafana::ip2field($host);
 		$data = array(
 			'editable' => true,
-			'fill' => true,
+			'fill' => 1,
 			'grid' => array(
 				'leftLogBase' => 2,
 				'rightLogBase' => 1,
 				'threshold1Color' => 'rgba(216, 200, 27, 0.27)',
 				'threshold2Color' => 'rgba(234, 112, 112, 0.22)',
 			),
-			'id' => null,
+			'id' => $id,
 			'legend' => array(
-				'show' => true,
+				'show' => false,
 			),
-			'lines' => 1,
+			'lines' => true,
 			'linewidth' => 2,
-			'nullPointMode' => 'connected',
+			'nullPointMode' => 'null as zero',
 			'pointradius' => 5,
 			'renderer' => 'flot',
 			'span' => 6,
@@ -128,9 +134,10 @@ class grafana {
 				'value_type' => 'cumulative',
 			),
 			'type' => 'graph',
-			'x-axis' => 1,
-			'y-axis' => 1,
+			'x-axis' => true,
+			'y-axis' => true,
 			'y_formats' => array('short','short'),
+			'steppedLine' => true,
 		);
 		$targets[] = array(
 			'refId' => 'A',
@@ -148,23 +155,24 @@ class grafana {
 		return $data;
 	}
 
-	public static function createPanel_ServerPerformance($name,$host,$port) {
+	public static function createPanel_ServerPerformance($name,$host,$port,$id=null) {
+		$host = grafana::ip2field($host);
 		$data = array(
 			'editable' => true,
-			'fill' => true,
+			'fill' => 1,
 			'grid' => array(
 				'leftLogBase' => 2,
 				'rightLogBase' => 1,
 				'threshold1Color' => 'rgba(216, 200, 27, 0.27)',
 				'threshold2Color' => 'rgba(234, 112, 112, 0.22)',
 			),
-			'id' => null,
+			'id' => $id,
 			'legend' => array(
-				'show' => true,
+				'show' => false,
 			),
-			'lines' => 1,
+			'lines' => true,
 			'linewidth' => 2,
-			'nullPointMode' => 'connected',
+			'nullPointMode' => 'null as zero',
 			'pointradius' => 5,
 			'renderer' => 'flot',
 			'span' => 6,
@@ -176,9 +184,10 @@ class grafana {
 				'value_type' => 'cumulative',
 			),
 			'type' => 'graph',
-			'x-axis' => 1,
-			'y-axis' => 1,
+			'x-axis' => true,
+			'y-axis' => true,
 			'y_formats' => array('short','short'),
+			'steppedLine' => true,
 		);	
 		$targets[] = array(
 			'refId' => 'A',

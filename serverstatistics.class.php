@@ -7,7 +7,7 @@ use SteamCondenser\Servers\SourceServer;
 class serverstatistics {
 	public $dev_mode = true;
 	public  $module = "default";
-	protected $serverList = array();
+	protected $public = array();
 	protected $serverList_CacheTime = 0;
 	protected $serverList_UpdateInterval = 1800;
 
@@ -28,7 +28,7 @@ class serverstatistics {
 	protected $ServerPlayerCount = array();
 	protected $ServerMapCount = array();
 
-	protected $ServerCountryCount = array('total'=>0, 'active_players'=>0, 'player_count'=>0);
+	protected $ServerCountryCount = array('total'=>array(), 'active_players'=>array(), 'player_count'=>array());
 	protected $ServerOS = array();
 
 	protected $masterlistQuery = "\\appid\\4920";
@@ -37,8 +37,8 @@ class serverstatistics {
 
 
 	public function __construct() {	
-		require_once(__DIR__."/grafana.class.php");
-		$this->gr = new grafana();
+		#require_once(__DIR__."/grafana.class.php");
+		#$this->gr = new grafana();
 	}
 	
 	public function __destruct() { 
@@ -124,7 +124,7 @@ class serverstatistics {
 		foreach ($this->ServerCountryCount['player_count'] as $sm => $pc) {
 			$this->graphite_data[] = sprintf("server.%s.%s.%s %d %d",$this->module,'servercountryplayercount',$sm , $pc, $this->update_time);
 		}
-		$this->ServerCountryCount = array();
+		$this->ServerCountryCount = array('total'=>array(), 'active_players'=>array(), 'player_count'=>array());
 	}
 
 	// Server Player Count
@@ -154,7 +154,7 @@ class serverstatistics {
 	}
 	protected function prepareServerMapCount() {
 		foreach ($this->ServerMapCount as $sm => $pc) {
-			$this->graphite_data[] = sprintf("server.%s.%s.map_%s %d %d",$this->module,'servermapcount',$sm , $pc, $this->update_time);
+			$this->graphite_data[] = sprintf("server.%s.%s.%s %d %d",$this->module,'servermapcount',$sm , $pc, $this->update_time);
 
 		}
 		$this->ServerMapCount = array();
@@ -174,9 +174,10 @@ class serverstatistics {
 				$this->getServers();
 				$this->clearBlacklist();
 				#$this->serverList = array(array('188.63.57.183','27016'));
-				//$this->serverList = array(array('89.105.209.250','27021'));
+				#$this->serverList = array(array('89.105.209.250','27021'));
 				//85.14.226.223:27016
-				//$this->serverList = array(array('85.14.226.223','27016'));
+				#$this->serverList = array(array('85.14.226.223','27016'));
+				#$this->serverList = array(array('85.14.226.223','27016'),array('89.105.209.250','27021'));
 			}
 
 			// Graph all servers
@@ -205,6 +206,9 @@ class serverstatistics {
 				} else {
 					$this->addBlacklist($srv[0],$srv[1]);
 				}
+
+				// Possible Monitoring
+				$this->updateMonitoring($srv[0],$srv[1],$serverDetails);
 			}
 			// All stats gathered, prepare then send
 	
@@ -241,7 +245,9 @@ class serverstatistics {
 			
 	}
 
-
+	protected function updateMonitoring($host,$port,$details) {
+		
+	}
 
 	protected function onBlacklist($host,$port) {
 		$value = $host.":".$port;
