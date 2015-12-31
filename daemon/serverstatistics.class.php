@@ -1,6 +1,6 @@
 <?php
 
-require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/../../steam-condenser-php/vendor/autoload.php';
 use SteamCondenser\Servers\MasterServer;
 use SteamCondenser\Servers\SourceServer;
 
