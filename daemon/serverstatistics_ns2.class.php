@@ -41,7 +41,6 @@ class serverstatistics_ns2 extends serverstatistics {
 
 	protected function saveData() {
 		$this->createDashboard();
-		print_r($this->jsonData);
 		$jsonData = json_encode($this->jsonData);
 		file_put_contents("site_data.json",$jsonData);
 	}
@@ -72,7 +71,9 @@ class serverstatistics_ns2 extends serverstatistics {
 		$this->grafana->prepareDashboard($dashboard);
 
 		// some sort of change check so we dont upload a dash every 5min :P
-		$this->grafana->sendDashboard($dashboard['meta']['slug'].".json");
+		if ($this->dev_mode == False) {
+			$this->grafana->sendDashboard($dashboard['meta']['slug'].".json");
+		}
 
 	}
 
@@ -81,17 +82,18 @@ class serverstatistics_ns2 extends serverstatistics {
 		$tags = explode("|",$data['info']['serverTags']);
 		$this->jsonData[$key] = array(
 			'host' => $data['host'],
-			'port' => $data['port'],
+			'port' => (int) $data['port'],
 			'serverName' => utf8_encode($data['info']['serverName']),
 			//'serverName' => "debug test",
 
 			'mapName' => $data['info']['mapName'],
-			'maxPlayers' => $data['info']['maxPlayers'],
-			'numberOfPlayers' => $data['info']['numberOfPlayers'],
+			'maxPlayers' => (int) $data['info']['maxPlayers'],
+			'numberOfPlayers' => (int) $data['info']['numberOfPlayers'],
 			'dedicated' => $data['info']['dedicated'],
-			'serverPort' => $data['info']['serverPort'],
-			'version' => $tags[0],
-			'graphs' => array('info_id'=>0,'perf_id'=>0)
+			'serverPort' => (int) $data['info']['serverPort'],
+			'version' => (int) $tags[0],
+			'graphs' => array('info_id'=>0,'perf_id'=>0),
+			'country' => strtolower(geoip_country_code_by_name($data['host'])),
 		);
 	}
 
