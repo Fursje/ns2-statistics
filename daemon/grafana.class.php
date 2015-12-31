@@ -12,7 +12,7 @@ class grafana {
 
 	public $host = "10.120.34.18";
 	public $port = 3000;
-	public $apiKey = "yJrIjoiNGR4THkzWHlHbm9FdWU2Tlc2OEFRckNnVWwwTkswNlUiLCJuIjoidGVzdGluZyIsImlkIjoxfQ==";
+	public $apiKey = "";
 	public $bin_curl = "/usr/bin/curl";
 
 
@@ -23,7 +23,7 @@ class grafana {
 	}
 
 	public function getDashboard($dashboard,$saveFile) {
-		// /usr/bin/curl -H "Authorization: Bearer eyJrIjoiNGR4THkzWHlHbm9FdWU2Tlc2OEFRckNnVWwwTkswNlUiLCJuIjoidGVzdGluZyIsImlkIjoxfQ==" -X GET 'http://10.120.34.18:3000/api/dashboards/db/natural-selection-2'
+		// /usr/bin/curl -H "Authorization: Bearer <api_id>" -X GET 'http://10.120.34.18:3000/api/dashboards/db/natural-selection-2'
 		$curl_url = sprintf("http://%s:%s/api/dashboards/db/%s",$this->host,$this->port,$dashboard);
 		$curl_cmd = sprintf("%s -H 'Authorization: Bearer %s' -X GET %s -o %s",$this->bin_curl,$this->apiKey,$curl_url, $saveFile);
 		exec($curl_cmd);
