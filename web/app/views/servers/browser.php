@@ -30,12 +30,15 @@ use Helpers\Url;
 				<tbody class="searchable">
 					<tr ng-repeat="x in servers | orderObjectBy:'numberOfPlayers':true">
 						<td><button type="button" class="btn btn-success btn-xsm">Online</button></td>
-						<td style="white-space:nowrap;"> <img src="<?php echo Url::templatePath()."blank.gif"; ?>" class="flag flag-{{ x.country }}" /> {{ x.host }}:{{ x.serverPort }}</td>
+						<td style="white-space:nowrap;"> 
+							<img src="<?php echo Url::templatePath()."blank.gif"; ?>" class="flag flag-{{ x.country }}" /> 
+							<a class="ip-href" href="/server/details/{{x.host}}">{{ x.host }}</a>:{{ x.serverPort }}
+						</td>
 						<td>{{ x.serverName }}</td>
 						<td>{{ x.mapName }}</td>
 						<td>{{ x.numberOfPlayers }} / {{ x.maxPlayers }}</td>
 						<td>{{ x.version }}</td>
-						<td><a class="btn btn-primary btn-xsm" href="/server/details/{{x.host}}/{{x.port}}" role="button">Graphs</a></td>	
+						<td><a class="btn btn-primary btn-xsm" href="/server/details/{{x.host}}/{{x.port}}" role="button">info</a></td>	
 					</tr>
 
 				</tbody>
