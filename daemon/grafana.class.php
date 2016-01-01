@@ -10,8 +10,8 @@
 // panels -> rows -> dashboard
 class grafana {
 
-	public $host = "10.120.34.18";
-	public $port = 3000;
+	public $host = "ns2servers.net";
+	public $port = 80;
 	public $apiKey = "";
 	public $bin_curl = "/usr/bin/curl";
 
@@ -23,14 +23,14 @@ class grafana {
 	}
 
 	public function getDashboard($dashboard,$saveFile) {
-		// /usr/bin/curl -H "Authorization: Bearer <api_id>" -X GET 'http://10.120.34.18:3000/api/dashboards/db/natural-selection-2'
-		$curl_url = sprintf("http://%s:%s/api/dashboards/db/%s",$this->host,$this->port,$dashboard);
+		// /usr/bin/curl -H "Authorization: Bearer <api_key>" -X GET 'http://10.120.34.18:3000/api/dashboards/db/natural-selection-2'
+		$curl_url = sprintf("http://%s:%s/grafana/api/dashboards/db/%s",$this->host,$this->port,$dashboard);
 		$curl_cmd = sprintf("%s -H 'Authorization: Bearer %s' -X GET %s -o %s",$this->bin_curl,$this->apiKey,$curl_url, $saveFile);
 		exec($curl_cmd);
 	}
 	
 	public function sendDashboard($uploadFile) {
-		$curl_url = sprintf("http://%s:%s/api/dashboards/db",$this->host,$this->port);
+		$curl_url = sprintf("http://%s:%s/grafana/api/dashboards/db",$this->host,$this->port);
 		$curl_cmd = sprintf("%s -H 'Accept: application/json' -H 'Content-Type: application/json' -H 'Authorization: Bearer %s' -X POST %s -d @%s",$this->bin_curl,$this->apiKey,$curl_url, $uploadFile);
 		print "debug: $curl_cmd\n";
 		exec($curl_cmd);

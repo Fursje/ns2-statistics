@@ -8,4 +8,3 @@ Simple Game Statistics stored in graphite, displayed in grafana.
 * https://github.com/koraktor/steam-condenser-php
 
 # Todo
-* Automatic Dashboard creation (ns2)
