@@ -4,6 +4,7 @@
 			<iframe src="/grafana/dashboard-solo/db/natural-selection-2?theme=light&panelId=2&fullscreen" style="width: 100%;" height="300" frameborder="0" scrolling="no"></iframe>
 		</p>
 		<div ng-app="ns2list" ng-controller="ns2servers">
+			<p style="text-align:right; font-size: 12px;">Updated every 5min <button class="btn btn-success btn-xsm" ng-click="refresh()">Refresh</button></p>
 			<table class="table table-condensed table-hover">
 				<caption>Server List</caption>
 				<thead>
@@ -14,7 +15,7 @@
 						<th>Map</th>
 						<th>Players</th>
 						<th>Version</th>
-						<th>info</th>
+						<th>Details</th>
 					</tr>
 				</thead>
 				<tbody class="searchable">
@@ -38,8 +39,18 @@
 <script>
 var app = angular.module('ns2list', []);
 app.controller('ns2servers', function($scope, $http) {
-    $http.get("/site_data.json")
-    .then(function (response) {$scope.servers = response.data;});
+	//$http.get("/site_data.json")
+	//.then(function (response) {
+	//	$scope.servers = response.data;
+	//});
+	$scope.refresh = function() {
+		$http.get("/site_data.json")
+		.then(function (response) {
+                	$scope.servers = response.data;
+        	});
+	};
+
+	$scope.refresh();
 });
 app.filter('orderObjectBy', function() {
   return function(items, field, reverse) {

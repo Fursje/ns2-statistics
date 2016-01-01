@@ -1,0 +1,26 @@
+
+
+.navbar {
+  margin-bottom: 20px;
+}
+
+.table th, .table td {
+    border-top: 1px solid #dddddd;
+    line-height: 15px;
+    padding: 8px;
+    text-align: left;
+}
+
+body {
+	padding-top: 0px;
+	padding-bottom: 20px;
+	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+	font-size: 14px;
+	line-height: 20px;
+}
+
+.btn-xsm {
+	padding: 2px 5px;
+	font-size: 10px;
+	line-height: normal;
+}
