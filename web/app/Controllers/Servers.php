@@ -67,6 +67,12 @@ class Servers extends Controller
         View::renderTemplate('footer', $data);
     }
 
+
+	public function _playerCompare($a,$b) {
+		 return $a['numberOfPlayers'] - $b['numberOfPlayers'];
+	}
+
+
 	public function details_ip($host) {
 		$found_servers = array();
 		$panel_url = '<iframe src="/grafana/dashboard-solo/db/natural-selection-2-servers-autogen?panelId=%d&fullscreen&theme=light" style="width: 50%%;" height="200" frameborder="0" scrolling="no"></iframe>';
@@ -78,12 +84,17 @@ class Servers extends Controller
 				if (preg_match($regex,$k,$m)) {
 					$tmp = array();
 					$tmp['serverName'] = $srv_data[$k]['serverName'];
+					$tmp['numberOfPlayers'] = $srv_data[$k]['numberOfPlayers'];
         				$tmp['panels']['info'] = sprintf($panel_url,$srv_data[$k]['graphs']['info_id']);
 		        		$tmp['panels']['perf'] = sprintf($panel_url,$srv_data[$k]['graphs']['perf_id']);
 					$found_servers[] =  $tmp;
 				}
 			}
 		}
+		usort($found_servers,function ($a,$b) {
+			return $b['numberOfPlayers'] - $a['numberOfPlayers'];
+		});
+
 
 		$data['servers_found'] = $found_servers;
 	
