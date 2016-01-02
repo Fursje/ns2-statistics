@@ -291,10 +291,12 @@ class serverstatistics {
 		$dtime = $this->update_time;
 
 		/* Basic Server Info */
-		$this->graphite_data[] = sprintf("server.%s.%s.%s.%s %d %d",$this->module,$host,$port,'networkVersion', $data['info']['networkVersion'], $dtime);
 		$this->graphite_data[] = sprintf("server.%s.%s.%s.%s %d %d",$this->module,$host,$port,'numberOfPlayers', $data['info']['numberOfPlayers'], $dtime);
 		$this->graphite_data[] = sprintf("server.%s.%s.%s.%s %d %d",$this->module,$host,$port,'maxPlayers', $data['info']['maxPlayers'], $dtime);
-		$this->graphite_data[] = sprintf("server.%s.%s.%s.%s %d %d",$this->module,$host,$port,'botNumber', $data['info']['botNumber'], $dtime);
+
+		// Not used atm
+		#$this->graphite_data[] = sprintf("server.%s.%s.%s.%s %d %d",$this->module,$host,$port,'botNumber', $data['info']['botNumber'], $dtime);
+		#$this->graphite_data[] = sprintf("server.%s.%s.%s.%s %d %d",$this->module,$host,$port,'networkVersion', $data['info']['networkVersion'], $dtime);
 	
 	}
 	
