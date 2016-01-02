@@ -16,79 +16,78 @@ use Core\Controller;
 class Servers extends Controller
 {
 
-    /**
-     * Call the parent construct
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
-     * Define Index page title and load template files
-     */
-    public function index()
-    {
-        $data['title'] = 'Server Browser';
-        #$data['welcome_message'] = $this->language->get('welcome_message');
-
-        View::renderTemplate('header', $data);
-        View::render('servers/browser', $data);
-        View::renderTemplate('footer', $data);
-    }
-
-    /**
-     * Define Server Detail page title and load template files
-     */
-    public function details($host,$port)
-    {
-        //$data['welcome_message'] = $this->language->get('subpage_message');
-	$data['host'] = $host;
-	$data['port'] = $port;
-	
-	$panel_url = '<iframe src="/grafana/dashboard-solo/db/natural-selection-2-servers-autogen?panelId=%d&fullscreen&theme=light" style="width: 100%%;" height="350" frameborder="0" scrolling="no"></iframe>';
-
-	$server = sprintf("%s:%d",$host,$port);
-	if (file_exists('site_data.json')) {
-        	$srv_data = json_decode(file_get_contents('site_data.json'),true);
-        	if (array_key_exists($server, $srv_data)) {
-			$data['server_details'] = $srv_data[$server];
-        		$data['title'] = sprintf("Server Details of %s",$data['server_details']['serverName']);
-        		$data['panels']['info'] = sprintf($panel_url,$data['server_details']['graphs']['info_id']);
-		        $data['panels']['perf'] = sprintf($panel_url,$data['server_details']['graphs']['perf_id']);
-		} Else {
-			$data['title'] = "Server Details: ?";
-			$data['panels'] = array();
-		}
+	/**
+	 * Call the parent construct
+	 */
+	public function __construct()
+	{
+		parent::__construct();
 	}
 
-        View::renderTemplate('header', $data);
-        View::render('servers/details', $data);
-        View::renderTemplate('footer', $data);
-    }
+	/**
+	 * Define Index page title and load template files
+	 */
+	public function index()
+	{
+		$data['title'] = 'Server Browser';
+		#$data['welcome_message'] = $this->language->get('welcome_message');
 
+		View::renderTemplate('header', $data);
+		View::render('servers/browser', $data);
+		View::renderTemplate('footer', $data);
+	}
 
-	public function _playerCompare($a,$b) {
-		 return $a['numberOfPlayers'] - $b['numberOfPlayers'];
+	/**
+	 * Define Server Detail page title and load template files
+	 */
+	public function details($host,$port)
+	{
+		//$data['welcome_message'] = $this->language->get('subpage_message');
+		$data['host'] = $host;
+		$data['port'] = $port;
+
+		$panel_url = '<iframe src="/grafana/dashboard-solo/db/natural-selection-2-servers-autogen?panelId=%d&fullscreen&theme=light" style="width: 100%%;" height="350" frameborder="0" scrolling="no"></iframe>';
+
+		$server = sprintf("%s:%d",$host,$port);
+		if (file_exists('site_data.json')) {
+			$srv_data = json_decode(file_get_contents('site_data.json'),true);
+			if (array_key_exists($server, $srv_data['servers'])) {
+				$data['server_details'] = $srv_data['servers'][$server];
+				$data['title'] = sprintf("Server Details of %s",$data['server_details']['serverName']);
+				$data['panels']['info'] = sprintf($panel_url,$data['server_details']['graphs']['info_id']);
+				$data['panels']['perf'] = sprintf($panel_url,$data['server_details']['graphs']['perf_id']);
+				} Else {
+				$data['title'] = "Server Details: ?";
+				$data['panels'] = array();
+			}
+		}
+
+		View::renderTemplate('header', $data);
+		View::render('servers/details', $data);
+		View::renderTemplate('footer', $data);
 	}
 
 
 	public function details_ip($host) {
 		$found_servers = array();
+		$panel_players = '<iframe src="/grafana/dashboard-solo/db/natural-selection-2-server-players-autogen?panelId=%d&fullscreen&theme=light" style="width: 100%%;" height="200" frameborder="0" scrolling="no"></iframe>';
 		$panel_url = '<iframe src="/grafana/dashboard-solo/db/natural-selection-2-servers-autogen?panelId=%d&fullscreen&theme=light" style="width: 50%%;" height="200" frameborder="0" scrolling="no"></iframe>';
 		if (filter_var($host, FILTER_VALIDATE_IP) && file_exists('site_data.json')) {
 			$srv_data = json_decode(file_get_contents('site_data.json'),true);
-			
+
 			$regex = sprintf("/%s\:\d+/",$host);
-			foreach ($srv_data as $k=>$v) {
+			foreach ($srv_data['servers'] as $k=>$v) {
 				if (preg_match($regex,$k,$m)) {
 					$tmp = array();
-					$tmp['serverName'] = $srv_data[$k]['serverName'];
-					$tmp['numberOfPlayers'] = $srv_data[$k]['numberOfPlayers'];
-        				$tmp['panels']['info'] = sprintf($panel_url,$srv_data[$k]['graphs']['info_id']);
-		        		$tmp['panels']['perf'] = sprintf($panel_url,$srv_data[$k]['graphs']['perf_id']);
+					$tmp['serverName'] = $srv_data['servers'][$k]['serverName'];
+					$tmp['numberOfPlayers'] = $srv_data['servers'][$k]['numberOfPlayers'];
+					$tmp['panels']['info'] = sprintf($panel_url,$srv_data['servers'][$k]['graphs']['info_id']);
+					$tmp['panels']['perf'] = sprintf($panel_url,$srv_data['servers'][$k]['graphs']['perf_id']);
 					$found_servers[] =  $tmp;
 				}
+			}
+			if (array_key_exists($host, $srv_data['hosts'])) {
+				$data['player_panel'] = sprintf($panel_players,$srv_data['hosts'][$host]['graphs']['players_id']);
 			}
 		}
 		usort($found_servers,function ($a,$b) {

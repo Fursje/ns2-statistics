@@ -10,12 +10,16 @@
 // panels -> rows -> dashboard
 class grafana {
 
-	public $host = "ns2servers.net";
-	public $port = 80;
+	public $host = "";
+	public $port = "";
 	public $apiKey = "";
 	public $bin_curl = "/usr/bin/curl";
 
-
+	public function __construct() {
+		if (file_exists(dirname(__FILE__).'/grafana.conf.php')) {
+			require_once(dirname(__FILE__).'/grafana.conf.php');
+		}
+	}
 	public function prepareDashboard($data) {
 		$json = json_encode($data);
 		file_put_contents($data['meta']['slug'].".json",$json);
@@ -105,6 +109,52 @@ class grafana {
 	public static function ip2field($ip) {
 		return str_replace(".","_",$ip);
 	}
+
+	public static function createPanel_HostPlayers($name,$host, $id = null) {
+		$host = grafana::ip2field($host);
+		$data = array(
+			'editable' => true,
+			'fill' => 1,
+			'grid' => array(
+				'leftLogBase' => 2,
+				'rightLogBase' => 1,
+				'threshold1Color' => 'rgba(216, 200, 27, 0.27)',
+				'threshold2Color' => 'rgba(234, 112, 112, 0.22)',
+			),
+			'id' => $id,
+			'legend' => array(
+				'show' => false,
+			),
+			'lines' => true,
+			'linewidth' => 2,
+			'nullPointMode' => 'null as zero',
+			'pointradius' => 5,
+			'renderer' => 'flot',
+			'span' => 12,
+			'targets' => array(),
+			'title' => 'Players on '.$name,
+			'tooltip' => array(
+				'value_type' => 'cumulative',
+			),
+			'type' => 'graph',
+			'x-axis' => true,
+			'y-axis' => true,
+			'y_formats' => array('short','short'),
+			'steppedLine' => true,
+		);
+		$targets[] = array(
+			'refId' => 'A',
+			'target' => sprintf("alias(keepLastValue(sumSeries(server.ns2.%s.*.maxPlayers), 2), 'Total Slots')",$host),
+		);
+		$targets[] = array(
+			'refId' => 'B',
+			'target' => sprintf("alias(keepLastValue(sumSeries(server.ns2.%s.*.numberOfPlayers), 2), 'Total Players')",$host),
+		);
+
+		$data['targets'] = $targets;
+		return $data;
+	}
+
 	public static function createPanel_ServerInfo($name,$host,$port, $id = null) {
 		$host = grafana::ip2field($host);
 		$data = array(
@@ -208,7 +258,7 @@ class grafana {
 
 		$data['targets'] = $targets;
 		return $data;
-	}	
+	}
 	
 }
 

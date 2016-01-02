@@ -6,6 +6,14 @@
 use Core\Language;
 
 #print_r($data);
+if (isset($data['player_panel'])) {
+	?>
+	<div>
+	<?php echo $data['player_panel']; ?>
+	</div>
+	<?php
+}
+
 if (isset($data['servers_found'])) {
 	foreach ($data['servers_found'] as $k => $v) {
 		print '<div>';

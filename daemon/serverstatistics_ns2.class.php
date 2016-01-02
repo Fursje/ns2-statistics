@@ -17,7 +17,7 @@ class serverstatistics_ns2 extends serverstatistics {
 	#private $masterlistQuery = "\\appid\\4920\\empty\\1";
 
 	protected $monitoring = False;
-	protected $jsonData = array();
+	protected $jsonData = array('servers'=>array(),'hosts'=>array(),'last_update'=>0);
 	protected $grafana = False;
 
 	protected function setGameSpecificStats($data) {
@@ -41,8 +41,10 @@ class serverstatistics_ns2 extends serverstatistics {
 
 	protected function saveData() {
 		$this->createDashboard();
+		$this->jsonData['last_update'] = date("r",$this->update_time);
 		$jsonData = json_encode($this->jsonData);
 		file_put_contents("site_data.json",$jsonData);
+		$this->jsonData = array('servers'=>array(),'hosts'=>array(),'last_update'=>0);
 	}
 
 	protected function createDashboard() {
@@ -51,41 +53,59 @@ class serverstatistics_ns2 extends serverstatistics {
 			$this->grafana = new grafana();
 		}		
 
-		$id_counter = 1;
 
-		foreach ($this->jsonData as $host => $value) {
+		// Create Info/Perf Dashboard
+		$id_counter = 1;
+		$rows = array();
+		foreach ($this->jsonData['servers'] as $host => $value) {
 			$panels = array();
 
-			$this->jsonData[$host]['graphs']['info_id'] = $id_counter;
+			$this->jsonData['servers'][$host]['graphs']['info_id'] = $id_counter;
 			$panels[] = $this->grafana->createPanel_ServerInfo($value['serverName'],$value['host'],$value['port'],$id_counter );
 			$id_counter++;
 
-			$this->jsonData[$host]['graphs']['perf_id'] = $id_counter;
+			$this->jsonData['servers'][$host]['graphs']['perf_id'] = $id_counter;
 			$panels[] = $this->grafana->createPanel_ServerPerformance($value['serverName'],$value['host'],$value['port'],$id_counter);
 			$id_counter++;
 
 			$rows[] = $this->grafana->createRow($host, 250, $panels);
 		}
 
-		$dashboard = $this->grafana->prepareDashboardDefault('Natural Selection 2 - Servers (autogen)','natural-selection-2-servers-autogen',$rows);
-		$this->grafana->prepareDashboard($dashboard);
+		$dashboard_info = $this->grafana->prepareDashboardDefault('Natural Selection 2 - Servers (autogen)','natural-selection-2-servers-autogen',$rows);
+		$this->grafana->prepareDashboard($dashboard_info);
+
+		// Create Dashboard players by IP
+		$id_counter = 1;
+		$rows = array();
+		foreach ($this->jsonData['servers'] as $host => $value) {
+			if (array_key_exists($value['host'],$this->jsonData['hosts'])) { continue; }
+			$panels = array();
+
+			$this->jsonData['hosts'][$value['host']]['graphs']['players_id'] = $id_counter;
+			$panels[] = $this->grafana->createPanel_HostPlayers($value['host'],$value['host'],$id_counter );
+			$id_counter++;
+
+			$rows[] = $this->grafana->createRow($value['host'], 250, $panels);
+		}
+
+		$dashboard_players = $this->grafana->prepareDashboardDefault('Natural Selection 2 - Server - Players (autogen)','natural-selection-2-server-players-autogen',$rows);
+		$this->grafana->prepareDashboard($dashboard_players);
+
 
 		// some sort of change check so we dont upload a dash every 5min :P
 		if ($this->dev_mode == False) {
-			$this->grafana->sendDashboard($dashboard['meta']['slug'].".json");
+			$this->grafana->sendDashboard($dashboard_info['meta']['slug'].".json");
+			$this->grafana->sendDashboard($dashboard_players['meta']['slug'].".json");
 		}
-
 	}
 
 	protected function gatherData($data) {
 		$key = sprintf("%s:%s",$data['host'],$data['port']);
 		$tags = explode("|",$data['info']['serverTags']);
-		$this->jsonData[$key] = array(
+		$this->jsonData['servers'][$key] = array(
 			'host' => $data['host'],
 			'port' => (int) $data['port'],
 			'serverName' => utf8_encode($data['info']['serverName']),
-			//'serverName' => "debug test",
-
 			'mapName' => $data['info']['mapName'],
 			'maxPlayers' => (int) $data['info']['maxPlayers'],
 			'numberOfPlayers' => (int) $data['info']['numberOfPlayers'],

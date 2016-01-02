@@ -13,7 +13,7 @@ use Helpers\Url;
 			<iframe src="/grafana/dashboard-solo/db/natural-selection-2?theme=light&panelId=2&fullscreen" style="width: 100%;" height="300" frameborder="0" scrolling="no"></iframe>
 		</p>
 		<div ng-app="ns2list" ng-controller="ns2servers">
-			<p style="text-align:right; font-size: 12px;">Updated every 5min <button class="btn btn-success btn-xsm" ng-click="refresh()">Refresh</button></p>
+			<p style="text-align:right; font-size: 12px;"><b>Last update</b>: {{ servers.last_update }} &nbsp; <button class="btn btn-success btn-xsm" ng-click="refresh()">Reload</button></p>
 			<table class="table table-condensed table-hover">
 				<caption>Server List</caption>
 				<thead>
@@ -28,7 +28,7 @@ use Helpers\Url;
 					</tr>
 				</thead>
 				<tbody class="searchable">
-					<tr ng-repeat="x in servers | orderObjectBy:'numberOfPlayers':true">
+					<tr ng-repeat="x in servers.servers | orderObjectBy:'numberOfPlayers':true">
 						<td><button type="button" class="btn btn-success btn-xsm">Online</button></td>
 						<td style="white-space:nowrap;"> 
 							<img src="<?php echo Url::templatePath()."blank.gif"; ?>" class="flag flag-{{ x.country }}" /> 
