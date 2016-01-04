@@ -12,7 +12,7 @@ $hooks = Hooks::get();
 ?>
 
 <!DOCTYPE html>
-<html lang="<?php echo LANGUAGE_CODE; ?>" ng-app="ns2list" ng-cloak>
+<html lang="<?php echo LANGUAGE_CODE; ?>">
   <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">

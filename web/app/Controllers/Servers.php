@@ -24,13 +24,24 @@ class Servers extends Controller
 		parent::__construct();
 	}
 
-	/**
-	 * Define Index page title and load template files
-	 */
 	public function index()
 	{
 		$data['title'] = 'Server Browser';
-		#$data['welcome_message'] = $this->language->get('welcome_message');
+
+		if (file_exists('site_data.json')) {
+			$srv_data = json_decode(file_get_contents('site_data.json'),true);
+			$data['servers'] = $srv_data['servers'];
+			$data['last_update'] = $srv_data['last_update'];
+
+			usort($data['servers'],function ($a,$b) {
+				return $b['numberOfPlayers'] - $a['numberOfPlayers'];
+			});
+
+
+		} else {
+			$data['servers'] = array();
+			$data['last_update'] = 0;
+		}
 
 		View::renderTemplate('header', $data);
 		View::render('servers/browser', $data);
