@@ -30,6 +30,7 @@ class Sitemap extends Controller
 		if (file_exists('site_data.json')) {
 			$srv_data = json_decode(file_get_contents('site_data.json'),true);
 			$data['data'] = $srv_data;
+			$data['data']['last_update'] = date("c",strtotime($srv_data['last_update']));
 
 			usort($data['data']['servers'],function ($a,$b) {
 				return $b['serverName'] - $a['serverName'];
