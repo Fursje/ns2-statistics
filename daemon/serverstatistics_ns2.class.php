@@ -244,7 +244,7 @@ class serverstatistics_ns2 extends serverstatistics {
 
 	public function sortServerbyCategory($data) {
 		$tags = explode("|",$data['info']['serverTags']);
-		$this->print_cli('DEBUG-TAG', $data['info']['serverTags']);
+		#$this->print_cli('DEBUG-TAG', $data['info']['serverTags']);
 		$category = "_none_";
 		foreach ($tags as $tagU) {
 			$tag = strtolower($tagU);
@@ -276,9 +276,9 @@ class serverstatistics_ns2 extends serverstatistics {
 		// Todo: graph type counts
 		// foreach category we want to plot the slots/players/servers in a graphs.
 		foreach ($this->serverByCategory as $cat => $val) {
-			$server[$cat]['server_count'] = count($this->serverByCategory[$cat]);
-			$server[$cat]['maxPlayers'] = 0;
-			$server[$cat]['numberOfPlayers'] = 0;
+			$server[$cat]['server_count'] = (int) count($this->serverByCategory[$cat]);
+			$server[$cat]['maxPlayers'] = (int) 0;
+			$server[$cat]['numberOfPlayers'] = (int) 0;
 			foreach ($val as $k =>$v) {
 				$server[$cat]['numberOfPlayers']+= $v['info']['numberOfPlayers'];
 				$server[$cat]['maxPlayers']+= $v['info']['maxPlayers'];
