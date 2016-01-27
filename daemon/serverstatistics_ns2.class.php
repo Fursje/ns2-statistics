@@ -195,8 +195,7 @@ class serverstatistics_ns2 extends serverstatistics {
 		}
 		$this->ServerVersionCount = array();
 	}
-
-
+	
 	protected function prepareNS2ServerSpecific($data) {
 		$host = str_replace(".","_",$data['host']);
 		$port = $data['port'];
@@ -245,19 +244,24 @@ class serverstatistics_ns2 extends serverstatistics {
 
 	public function sortServerbyCategory($data) {
 		$tags = explode("|",$data['info']['serverTags']);
-		#$this->print_cli('DEBUG-TAG', $data['info']['serverTags']);
+		$this->print_cli('DEBUG-TAG', $data['info']['serverTags']);
 		$category = "_none_";
-		foreach ($tags as $tag) {
+		foreach ($tags as $tagU) {
+			$tag = strtolower($tagU);
 			switch($tag) {
-				case 'NSL':
+				case 'nsl':
 					$category = 'nsl';
 					break;
-				case 'Siege':
+				case 'siege':
 					$category = 'siege';
+					break;
+				case 'rookie_only':
+					$category = 'rookie_only';
 					break;
 				case 'rookie':
 					$category = 'rookie';
-					break;					
+					break;
+
 				#default:
 				#	$category = 'normal';
 			}
@@ -265,14 +269,25 @@ class serverstatistics_ns2 extends serverstatistics {
 		}
 		if ($category == '_none_') { $category = 'normal'; }
 
-		$this->serverByCategory[$category][] = array('name'=>$data['info']['serverName'],'host'=>$data['host'],'port'=>$data['port']);
+		$this->serverByCategory[$category][] = $data;
 	}
 	protected function prepareServerbyCategory() {
 		// Todo: generate dashboard by type
 		// Todo: graph type counts
+		// foreach category we want to plot the slots/players/servers in a graphs.
 		foreach ($this->serverByCategory as $cat => $val) {
-			$amount = count($this->serverByCategory[$cat]);
-			$this->graphite_data[] = sprintf("server.%s.%s.%s %d %d",$this->module,'serverbycategory', $cat, $amount, $this->update_time);
+			$server[$cat]['server_count'] = count($this->serverByCategory[$cat]);
+			$server[$cat]['maxPlayers'] = 0;
+			$server[$cat]['numberOfPlayers'] = 0;
+			foreach ($val as $k =>$v) {
+				$server[$cat]['numberOfPlayers']+= $v['info']['numberOfPlayers'];
+				$server[$cat]['maxPlayers']+= $v['info']['maxPlayers'];
+			}
+		}
+		foreach ($server as $cat => $val) {
+			$this->graphite_data[] = sprintf("server.%s.%s.%s.%s %d %d",$this->module,'statsbycategory', $cat, 'numberOfPlayers', $val['numberOfPlayers'], $this->update_time);
+			$this->graphite_data[] = sprintf("server.%s.%s.%s.%s %d %d",$this->module,'statsbycategory', $cat, 'maxPlayers', $val['maxPlayers'], $this->update_time);
+			$this->graphite_data[] = sprintf("server.%s.%s.%s.%s %d %d",$this->module,'statsbycategory', $cat, 'server_count', $val['server_count'], $this->update_time);
 		}
 
 		$this->clearServerbyCategory();
