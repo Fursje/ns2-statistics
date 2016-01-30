@@ -246,26 +246,21 @@ class serverstatistics_ns2 extends serverstatistics {
 		$tags = explode("|",$data['info']['serverTags']);
 		#$this->print_cli('DEBUG-TAG', $data['info']['serverTags']);
 		$category = "_none_";
+		$valid_cats = array(
+			'/^(nsl)$/',
+			'/^(siege)$/',
+			'/^(faded).*$/',
+			'/^(rookie_only)$/',
+			'/^(rookie)$/'
+		);
 		foreach ($tags as $tagU) {
-			$tag = strtolower($tagU);
-			switch($tag) {
-				case 'nsl':
-					$category = 'nsl';
-					break;
-				case 'siege':
-					$category = 'siege';
-					break;
-				case 'rookie_only':
-					$category = 'rookie_only';
-					break;
-				case 'rookie':
-					$category = 'rookie';
-					break;
-
-				#default:
-				#	$category = 'normal';
+			$tag = (string) strtolower($tagU);
+			foreach ($valid_cats as $regex) {
+				if (preg_match($regex,$tag,$m)) {
+					$category = $m[1];
+					break 2;
+				}
 			}
-			if ($category != '_none_') { continue; }
 		}
 		if ($category == '_none_') { $category = 'normal'; }
 
