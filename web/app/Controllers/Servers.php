@@ -65,6 +65,7 @@ class Servers extends Controller
 			if (array_key_exists($server, $srv_data['servers'])) {
 				$data['server_details'] = $srv_data['servers'][$server];
 				$data['title'] = sprintf("Server Details of %s",$data['server_details']['serverName']);
+				$data['description'] = "Natural Selection II - ".$data['title'];
 				$data['panels']['info'] = sprintf($panel_url,$data['server_details']['graphs']['info_id']);
 				$data['panels']['perf'] = sprintf($panel_url,$data['server_details']['graphs']['perf_id']);
 				} Else {
@@ -109,6 +110,7 @@ class Servers extends Controller
 		$data['servers_found'] = $found_servers;
 	
 		$data['title'] = "Server Details: $host";
+		$data['description'] = "Natural Selection II - Statistics of all servers running on: $host";
 
 		View::renderTemplate('header', $data);
 		View::render('servers/details_ip', $data);

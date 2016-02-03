@@ -17,9 +17,16 @@ $hooks = Hooks::get();
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<meta name="description" content="Natural Selection 2 - Game and Server Performance Statistics">
+<?php
+	if (isset($data['description'])) {
+		$description =  $data['description'];
+	} else {
+		$description = "Natural Selection 2 - Game and Server Performance Statistics";
+	}
+?>
+	<meta name="description" content="<?php echo $description; ?>">
 	<meta name="keywords" content="ns2,natural selection 2, natural selection II, ns2servers, statistics, performance, server browser">
-	<meta name="author" content="Furs">
+	<meta name="author" content="ns2servers.net">
 	<link rel="icon" href="/favicon.ico">
 	<?php
 	$hooks->run('meta');
