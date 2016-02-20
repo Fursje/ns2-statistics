@@ -118,6 +118,9 @@ class Servers extends Controller
 	}
 
 	public function workshop() {
+		$data['title'] = "Workshop Backup Server";
+		$data['description'] = "Natural Selection II - running a workshop backup server";
+
 		View::renderTemplate('header', $data);
 		View::render('servers/workshop', $data);
 		View::renderTemplate('footer', $data);
