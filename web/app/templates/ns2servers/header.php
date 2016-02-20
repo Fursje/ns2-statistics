@@ -75,7 +75,7 @@ $hooks = Hooks::get();
 				  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Statistics <span class="caret"></span></a>
 				  <ul class="dropdown-menu">
 				    <li><a href="/grafana/dashboard/db/natural-selection-2?theme=light">Generic</a></li>
-				    <li><a href="/grafana/dashboard/db/natural-selection-2-gametypes#">Game modes</a></li>
+				    <li><a href="/grafana/dashboard/db/natural-selection-2-gametypes?theme=light">Game modes</a></li>
 				  </ul>
 				</li>
 				<li><a href="/workshop">Workshop Backup</a>

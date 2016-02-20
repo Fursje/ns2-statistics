@@ -23,7 +23,18 @@ header("Content-type: text/xml");
 		<changefreq>weekly</changefreq>
 		<priority>0.4</priority>
 	</url>
-
+	<url>
+		<loc>http://ns2servers.net/grafana/dashboard/db/natural-selection-2-gametypes?theme=light</loc>
+		<lastmod><?php print($data['data']['last_update']); ?></lastmod>
+		<changefreq>weekly</changefreq>
+		<priority>0.4</priority>
+	</url>
+	<url>
+		<loc>http://ns2servers.net/workshop</loc>
+		<lastmod><?php print($data['data']['last_update']); ?></lastmod>
+		<changefreq>weekly</changefreq>
+		<priority>0.4</priority>
+	</url>
 <?php
 
 if (isset($data['data'])) {
