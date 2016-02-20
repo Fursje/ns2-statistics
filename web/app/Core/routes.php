@@ -16,6 +16,7 @@ Router::any('', 'Controllers\Servers@index');
 Router::any('server/details/(:any)/(:num)', 'Controllers\Servers@details');
 Router::any('server/details/(:any)', 'Controllers\Servers@details_ip');
 Router::any('sitemap.xml', 'Controllers\Sitemap@index');
+Router::any('workshop', 'Controllers\Servers@workshop');
 
 /** Module routes. */
 $hooks = Hooks::get();

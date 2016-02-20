@@ -78,7 +78,8 @@ $hooks = Hooks::get();
 				    <li><a href="/grafana/dashboard/db/natural-selection-2-gametypes#">Game modes</a></li>
 				  </ul>
 				</li>
-
+				<li><a href="/workshop">Workshop Backup</a>
+				</li>
 				<li><a href="/contact">Contact</a>
 				</li>
 			    </ul>

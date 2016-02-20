@@ -1,7 +1,3 @@
-body {
-	background-color: #A9A9A9;
-}
-
 .navbar {
 	margin-top: 5px;
 	margin-left: -25px;
@@ -9,6 +5,7 @@ body {
 }
 .container {
 	background-color: white;
+    min-height:800px
 }
 
 .table th, .table td {
@@ -30,6 +27,7 @@ body {
 	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
 	font-size: 14px;
 	line-height: 20px;
+    background-color: #A9A9A9;
 }
 
 .btn-xsm {

@@ -117,4 +117,9 @@ class Servers extends Controller
 		View::renderTemplate('footer', $data);
 	}
 
+	public function workshop() {
+		View::renderTemplate('header', $data);
+		View::render('servers/workshop', $data);
+		View::renderTemplate('footer', $data);
+	}
 }
