@@ -149,7 +149,8 @@ class serverstatistics_ns2 extends serverstatistics {
 			}
 		#}
 
-		foreach ($this->serverPingData as $ip => $value) {
+		foreach ($this->serverPingData as $ipa => $value) {
+			$ip = str_replace(".","_",$ipa);
 			$this->graphite_data[] = sprintf("server.%s.%s.%s.%s %.2f %d",$this->module,'smokeping',$ip , "min", $value['min'], $this->update_time);
 			$this->graphite_data[] = sprintf("server.%s.%s.%s.%s %.2f %d",$this->module,'smokeping',$ip , "max", $value['max'], $this->update_time);
 			$this->graphite_data[] = sprintf("server.%s.%s.%s.%s %.2f %d",$this->module,'smokeping',$ip , "avg", $value['avg'], $this->update_time);
