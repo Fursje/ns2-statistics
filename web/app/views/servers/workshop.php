@@ -12,6 +12,7 @@ use Helpers\Url;
 		The following workshop backup servers can be used in your server configuration.<br><br>
 		<ul>
 			<li>http://workshop.ns2servers.net/</li>
+			<li>http://thirstyonos.com:27031/</li>
 			<li>...</li>
 		</ul>
 		Or you can host one yourself by getting the Server from <a href="https://github.com/GhoulofGSG9/NS2_WorkshopBackup">Github</a>
