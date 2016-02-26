@@ -12,6 +12,7 @@ class serverstatistics_ns2 extends serverstatistics {
 	protected $ServerVersionCount = array();
 	protected $serverByCategory = array();
 	protected $serversModded = array('Modded'=>0,'Vanilla'=>0);
+	protected $serverPingData = array();
 
 	public $masterlistQuery = "\\appid\\4920";
 	#private $masterlistQuery = "\\appid\\4920\\empty\\1";
@@ -36,7 +37,10 @@ class serverstatistics_ns2 extends serverstatistics {
 		$this->prepareServerbyCategory();
 		$this->prepareServersModded();
 
+		$this->createPingStatistics();
+
 		$this->saveData();
+
 	}
 
 	protected function saveData() {
@@ -119,6 +123,66 @@ class serverstatistics_ns2 extends serverstatistics {
 
 
 	/* Monitoring */
+	protected function createPingStatistics() {
+		$this->serverPingData = array();
+
+		//  fping -C 20 -q -B1 -r1 -i10 -f /tmp/srv_list
+		$uniq_ips = array();
+		$tmp_list = "";
+		foreach ($this->serverList as $tmp_k => $tmp_v) {
+			if (!in_array($tmp_v[0],$uniq_ips)) { $uniq_ips[] = $tmp_v[0]; }
+		}
+		$ns2servers_ping_file = dirname(__FILE__)."/ns2servers_ping.list";
+		$servers = implode("\n",$uniq_ips);
+		file_put_contents($ns2servers_ping_file,$servers);
+		$cli_cmd = sprintf("fping -C 10 -q -B1 -r1 -i10 -f %s 2>&1",$ns2servers_ping_file);
+		exec($cli_cmd, $return_data, $return_code);
+		$this->print_cli("debug", "getPingStatistics: return_code[".$return_code."]");
+		#if ($return_code == 0) {
+			foreach ($return_data as $line) {
+				$tmp2 = explode(":",$line);
+				$tmp3 = explode(" ",trim($tmp2[1]));
+				
+				$ip = trim($tmp2[0]);
+				$data = $this->_parsePingResults($tmp3);
+				$this->serverPingData[$ip] = $data;
+			}
+		#}
+
+		foreach ($this->serverPingData as $ip => $value) {
+			$this->graphite_data[] = sprintf("server.%s.%s.%s.%s %.2f %d",$this->module,'smokeping',$ip , "min", $value['min'], $this->update_time);
+			$this->graphite_data[] = sprintf("server.%s.%s.%s.%s %.2f %d",$this->module,'smokeping',$ip , "max", $value['max'], $this->update_time);
+			$this->graphite_data[] = sprintf("server.%s.%s.%s.%s %.2f %d",$this->module,'smokeping',$ip , "avg", $value['avg'], $this->update_time);
+			$this->graphite_data[] = sprintf("server.%s.%s.%s.%s %d %d",$this->module,'smokeping',$ip , "loss", $value['loss'], $this->update_time);
+		}
+
+	}
+	protected function _parsePingResults($data) {
+		$return = array(
+			"min" => 0,
+			"max" => 0,
+			"avg" => 0,
+			"loss" => 0
+		);
+		$count = count($data);
+		$total = 0;
+		$loss = 0;
+		foreach ($data as $item) {
+			if (is_numeric($item)) {
+				if ($return['min'] == 0) { $return['min'] = $item; }
+				if ($item < $return['min']) { $return['min'] = $item; }
+				if ($item > $return['max']) { $return['max'] = $item; }
+				$total += $item;
+			} else {
+				$loss++;
+			}
+		}
+		if ($total > 0) {
+			$return['avg'] = $total / ($count-$loss);
+		}
+		$return['loss'] = 100 / $count * $loss;
+		return $return;
+	}
 	/*
 	private function _loadMonitoring() {
 		if (!is_object($this->monitoring)) {

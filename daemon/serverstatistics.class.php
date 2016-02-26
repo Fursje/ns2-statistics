@@ -174,12 +174,11 @@ class serverstatistics {
 				$this->getServers();
 				$this->clearBlacklist();
 				#$this->serverList = array(array('188.63.57.183','27016'));
-				#$this->serverList = array(array('89.105.209.250','27021'));
+				#$this->serverList = array(array('89.105.209.250','27021'),array('136.243.170.231','27036'));
 				//85.14.226.223:27016
-				#$this->serverList = array(array('88.207.213.121','27018'));
+				#$this->serverList = array(array('136.243.170.231','27036'));
 				#$this->serverList = array(array('85.14.226.223','27016'),array('89.105.209.250','27021'));
 			}
-
 			// Graph all servers
 			foreach ($this->serverList as $tmp=>$srv) {
 				
