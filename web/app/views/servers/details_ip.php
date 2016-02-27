@@ -5,16 +5,13 @@
 
 use Core\Language;
 
-#print_r($data);
-if (isset($data['player_panel'])) {
-	?>
-	<div>
-	<?php echo $data['player_panel']; ?>
-	</div>
-	<?php
-}
 
-if (isset($data['servers_found'])) {
+
+if (count($data['servers_found']) >= 1) {
+	print "<div>\n";
+	print $data['player_panel'];
+	print "</div>\n";
+
 	foreach ($data['servers_found'] as $k => $v) {
 		print '<div>';
 		foreach ($v['panels'] as $panel_frame) {
@@ -23,6 +20,11 @@ if (isset($data['servers_found'])) {
 		print '<br>';
 		print '</div>';
 	}
+	print "<div>\n";
+	print $data['smokeping_panel'];
+	print "<center><small>Smokeping measures the network latency to the servers and show the min/max/avg/loss in 1 graph.</small></center>";
+	print "</div>\n";
+	print "<br>\n";
 } Else {
         ?>
         <div class="alert alert-danger" role="alert">
@@ -32,5 +34,6 @@ if (isset($data['servers_found'])) {
         </div>
         <?php
 }
+
 
 ?>

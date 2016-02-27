@@ -57,7 +57,8 @@ class Servers extends Controller
 		$data['host'] = $host;
 		$data['port'] = $port;
 
-		$panel_url = '<iframe src="/grafana/dashboard-solo/db/natural-selection-2-servers-autogen?panelId=%d&fullscreen&theme=light" style="width: 100%%;" height="350" frameborder="0" scrolling="no"></iframe>';
+		$panel_url = '<iframe src="/grafana/dashboard-solo/db/natural-selection-2-servers-autogen?panelId=%d&fullscreen&theme=light" style="width: 100%%;" height="250" frameborder="0" scrolling="no"></iframe>';
+		$panel_smokeping = '<iframe src="/grafana/dashboard-solo/db/natural-selection-2-server-smokeping-autogen?panelId=%d&fullscreen&theme=light" style="width: 100%%;" height="250" frameborder="0" scrolling="no"></iframe>';
 
 		$server = sprintf("%s:%d",$host,$port);
 		if (file_exists('site_data.json')) {
@@ -72,6 +73,9 @@ class Servers extends Controller
 				$data['title'] = "Server Details: ?";
 				$data['panels'] = array();
 			}
+			if (array_key_exists($host, $srv_data['hosts'])) {
+				$data['smokeping_panel'] = sprintf($panel_smokeping,$srv_data['hosts'][$host]['graphs']['smokeping_id']);
+			}
 		}
 
 		View::renderTemplate('header', $data);
@@ -84,6 +88,8 @@ class Servers extends Controller
 		$found_servers = array();
 		$panel_players = '<iframe src="/grafana/dashboard-solo/db/natural-selection-2-server-players-autogen?panelId=%d&fullscreen&theme=light" style="width: 100%%;" height="200" frameborder="0" scrolling="no"></iframe>';
 		$panel_url = '<iframe src="/grafana/dashboard-solo/db/natural-selection-2-servers-autogen?panelId=%d&fullscreen&theme=light" style="width: 50%%;" height="200" frameborder="0" scrolling="no"></iframe>';
+		$panel_smokeping = '<iframe src="/grafana/dashboard-solo/db/natural-selection-2-server-smokeping-autogen?panelId=%d&fullscreen&theme=light" style="width: 100%%;" height="300" frameborder="0" scrolling="no"></iframe>';
+
 		if (filter_var($host, FILTER_VALIDATE_IP) && file_exists('site_data.json')) {
 			$srv_data = json_decode(file_get_contents('site_data.json'),true);
 
@@ -100,6 +106,7 @@ class Servers extends Controller
 			}
 			if (array_key_exists($host, $srv_data['hosts'])) {
 				$data['player_panel'] = sprintf($panel_players,$srv_data['hosts'][$host]['graphs']['players_id']);
+				$data['smokeping_panel'] = sprintf($panel_smokeping,$srv_data['hosts'][$host]['graphs']['smokeping_id']);
 			}
 		}
 		usort($found_servers,function ($a,$b) {

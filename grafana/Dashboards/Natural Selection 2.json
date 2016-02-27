@@ -12,7 +12,7 @@
     {
       "collapse": false,
       "editable": true,
-      "height": "250px",
+      "height": "350px",
       "panels": [
         {
           "aliasColors": {},
@@ -40,6 +40,8 @@
             "alignAsTable": true,
             "avg": true,
             "current": true,
+            "hideEmpty": false,
+            "hideZero": false,
             "max": true,
             "min": false,
             "rightSide": false,
@@ -57,19 +59,19 @@
           "renderer": "flot",
           "rightYAxisLabel": "",
           "seriesOverrides": [],
-          "span": 6,
+          "span": 5,
           "stack": false,
           "steppedLine": false,
           "targets": [
             {
               "hide": false,
               "refId": "A",
-              "target": "alias(keepLastValue(sumSeries(server.ns2.*.*.maxPlayers), 5), 'Available Slots')"
+              "target": "alias(keepLastValue(sumSeries(server.ns2.statsbycategory.*.maxPlayers), 5), 'Available Slots')"
             },
             {
               "hide": false,
               "refId": "B",
-              "target": "alias(keepLastValue(sumSeries(server.ns2.*.*.numberOfPlayers), 5), 'Players')"
+              "target": "alias(keepLastValue(sumSeries(server.ns2.statsbycategory.*.numberOfPlayers), 5), 'Players')"
             }
           ],
           "timeFrom": null,
@@ -86,6 +88,55 @@
             "none",
             "short"
           ]
+        },
+        {
+          "cacheTimeout": null,
+          "colorBackground": false,
+          "colorValue": false,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "datasource": null,
+          "editable": true,
+          "error": false,
+          "format": "none",
+          "id": 23,
+          "interval": null,
+          "links": [],
+          "maxDataPoints": 100,
+          "nullPointMode": "connected",
+          "nullText": null,
+          "postfix": "",
+          "postfixFontSize": "50%",
+          "prefix": "",
+          "prefixFontSize": "50%",
+          "span": 2,
+          "sparkline": {
+            "fillColor": "rgba(31, 118, 189, 0.18)",
+            "full": true,
+            "lineColor": "rgb(31, 120, 193)",
+            "show": true
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "target": "sumSeries(server.ns2.server-os.*)"
+            }
+          ],
+          "thresholds": "",
+          "title": "Total Servers",
+          "type": "singlestat",
+          "valueFontSize": "80%",
+          "valueMaps": [
+            {
+              "op": "=",
+              "text": "N/A",
+              "value": "null"
+            }
+          ],
+          "valueName": "avg"
         },
         {
           "aliasColors": {},
@@ -130,14 +181,14 @@
           "renderer": "flot",
           "rightYAxisLabel": "",
           "seriesOverrides": [],
-          "span": 6,
+          "span": 5,
           "stack": false,
           "steppedLine": false,
           "targets": [
             {
               "hide": false,
               "refId": "B",
-              "target": "alias(keepLastValue(summarize(sumSeries(server.ns2.*.*.numberOfPlayers), '5m', 'max', false), 10), 'Players')"
+              "target": "alias(keepLastValue(sumSeries(server.ns2.statsbycategory.*.numberOfPlayers), 5), 'Players')"
             }
           ],
           "timeFrom": null,
@@ -154,6 +205,48 @@
             "none",
             "short"
           ]
+        }
+      ],
+      "title": "New row"
+    },
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "450px",
+      "panels": [
+        {
+          "cacheTimeout": null,
+          "datasource": null,
+          "editable": true,
+          "error": false,
+          "id": 34,
+          "interval": null,
+          "isNew": true,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "legendType": "rightSide",
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "legendType": "On graph",
+          "links": [],
+          "maxDataPoints": "3",
+          "nullPointMode": "connected",
+          "nullText": null,
+          "pieType": "donut",
+          "span": 3,
+          "targets": [
+            {
+              "refId": "A",
+              "target": "aliasByNode(removeBelowValue(server.ns2.serverplayercount.*, 2), 3)"
+            }
+          ],
+          "title": "Player Distribution",
+          "type": "piechart"
         },
         {
           "aliasColors": {},
@@ -178,16 +271,17 @@
           "id": 16,
           "leftYAxisLabel": "Slots",
           "legend": {
-            "alignAsTable": false,
-            "avg": false,
-            "current": false,
-            "hideEmpty": false,
-            "max": false,
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "hideEmpty": true,
+            "hideZero": true,
+            "max": true,
             "min": false,
-            "rightSide": false,
-            "show": false,
+            "rightSide": true,
+            "show": true,
             "total": false,
-            "values": false
+            "values": true
           },
           "lines": true,
           "linewidth": 2,
@@ -198,13 +292,13 @@
           "points": false,
           "renderer": "flot",
           "seriesOverrides": [],
-          "span": 6,
+          "span": 9,
           "stack": true,
           "steppedLine": false,
           "targets": [
             {
               "refId": "A",
-              "target": "aliasByNode(keepLastValue(server.ns2.serverplayercount.*, 10), 3)"
+              "target": "aliasByNode(removeBelowValue(keepLastValue(server.ns2.serverplayercount.*, 2), 2), 3)"
             }
           ],
           "timeFrom": null,
@@ -221,6 +315,803 @@
             "short",
             "short"
           ]
+        }
+      ],
+      "title": "New row"
+    },
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "450px",
+      "panels": [
+        {
+          "cacheTimeout": null,
+          "datasource": null,
+          "editable": true,
+          "error": false,
+          "id": 31,
+          "interval": null,
+          "isNew": true,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "legendType": "rightSide",
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "legendType": "On graph",
+          "links": [],
+          "maxDataPoints": 3,
+          "nullPointMode": "connected",
+          "nullText": null,
+          "pieType": "donut",
+          "span": 3,
+          "targets": [
+            {
+              "refId": "A",
+              "target": "aliasByNode(keepLastValue(removeBelowValue(server.ns2.servercountryplayercount.*, 10), 2), 3)"
+            }
+          ],
+          "title": "Players by Country (based on server location)",
+          "type": "piechart"
+        },
+        {
+          "aliasColors": {},
+          "bars": true,
+          "datasource": null,
+          "editable": true,
+          "error": false,
+          "fill": 5,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 22,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "hideZero": true,
+            "max": true,
+            "min": false,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": false,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null as zero",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "span": 9,
+          "stack": true,
+          "steppedLine": false,
+          "targets": [
+            {
+              "refId": "A",
+              "target": "aliasByNode(keepLastValue(server.ns2.servercountryplayercount.*, 2), 3)"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Players by Country (based on server location)",
+          "tooltip": {
+            "shared": true,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "short",
+            "short"
+          ]
+        }
+      ],
+      "title": "New row"
+    },
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "450px",
+      "panels": [
+        {
+          "cacheTimeout": null,
+          "datasource": null,
+          "editable": true,
+          "error": false,
+          "id": 32,
+          "interval": null,
+          "isNew": true,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "legendType": "rightSide",
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "legendType": "On graph",
+          "links": [],
+          "maxDataPoints": "1",
+          "nullPointMode": "connected",
+          "nullText": null,
+          "pieType": "donut",
+          "span": 3,
+          "targets": [
+            {
+              "refId": "A",
+              "target": "aliasByNode(server.ns2.servercountrycount.*, 3)"
+            }
+          ],
+          "title": "Servers by Country",
+          "type": "piechart"
+        },
+        {
+          "aliasColors": {},
+          "bars": true,
+          "datasource": null,
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 20,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "hideEmpty": true,
+            "hideZero": true,
+            "max": true,
+            "min": false,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": false,
+          "linewidth": 2,
+          "links": [],
+          "nullPointMode": "null as zero",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "span": 9,
+          "stack": true,
+          "steppedLine": false,
+          "targets": [
+            {
+              "refId": "A",
+              "target": "aliasByNode(keepLastValue(server.ns2.servercountrycount.*, 10), 3)"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Servers by Country",
+          "tooltip": {
+            "shared": true,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "short",
+            "short"
+          ]
+        }
+      ],
+      "title": "New row"
+    },
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "450px",
+      "panels": [
+        {
+          "cacheTimeout": null,
+          "datasource": null,
+          "editable": true,
+          "error": false,
+          "id": 30,
+          "interval": null,
+          "isNew": true,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "legendType": "rightSide",
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "legendType": "On graph",
+          "links": [],
+          "maxDataPoints": "1",
+          "nullPointMode": "connected",
+          "nullText": null,
+          "pieType": "donut",
+          "span": 3,
+          "targets": [
+            {
+              "refId": "A",
+              "target": "aliasByNode(server.ns2.servercountryactivecount.*, 3)"
+            }
+          ],
+          "title": "Servers by Country (with Players)",
+          "type": "piechart"
+        },
+        {
+          "aliasColors": {},
+          "bars": true,
+          "datasource": null,
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "height": "",
+          "id": 21,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "hideEmpty": true,
+            "hideZero": true,
+            "max": true,
+            "min": true,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": false,
+          "linewidth": 2,
+          "links": [],
+          "nullPointMode": "null as zero",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "span": 9,
+          "stack": true,
+          "steppedLine": false,
+          "targets": [
+            {
+              "refId": "A",
+              "target": "aliasByNode(removeBelowValue(keepLastValue(server.ns2.servercountryactivecount.*, 10), 1), 3)"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Servers by Country (with Players)",
+          "tooltip": {
+            "shared": true,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "short",
+            "short"
+          ]
+        }
+      ],
+      "title": "New row"
+    },
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "250px",
+      "panels": [
+        {
+          "cacheTimeout": null,
+          "datasource": null,
+          "editable": true,
+          "error": false,
+          "id": 29,
+          "interval": null,
+          "isNew": true,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "legendType": "rightSide",
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "legendType": "On graph",
+          "links": [],
+          "maxDataPoints": 3,
+          "nullPointMode": "connected",
+          "nullText": null,
+          "pieType": "donut",
+          "span": 3,
+          "targets": [
+            {
+              "refId": "A",
+              "target": "aliasByNode(server.ns2.statsbycategory.*.server_count, 3)"
+            }
+          ],
+          "title": "Game Types",
+          "transparent": false,
+          "type": "piechart"
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": null,
+          "editable": true,
+          "error": false,
+          "fill": 4,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 26,
+          "isNew": true,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": true,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null as zero",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "span": 9,
+          "stack": true,
+          "steppedLine": false,
+          "targets": [
+            {
+              "refId": "A",
+              "target": "aliasByNode(keepLastValue(server.ns2.statsbycategory.*.server_count, 2), 3)"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "GameTypes (Limited atm)",
+          "tooltip": {
+            "shared": true,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "short",
+            "short"
+          ]
+        }
+      ],
+      "title": "Game Types"
+    },
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "250px",
+      "panels": [
+        {
+          "cacheTimeout": null,
+          "datasource": null,
+          "editable": true,
+          "error": false,
+          "id": 27,
+          "interval": null,
+          "isNew": true,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "legendType": "rightSide",
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "legendType": "On graph",
+          "links": [],
+          "maxDataPoints": 3,
+          "nullPointMode": "connected",
+          "nullText": null,
+          "pieType": "donut",
+          "span": 3,
+          "targets": [
+            {
+              "refId": "A",
+              "target": "aliasByNode(server.ns2.server-os.*, 3)"
+            }
+          ],
+          "title": "Server OS",
+          "type": "piechart"
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": null,
+          "editable": true,
+          "error": false,
+          "fill": 5,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 24,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": true,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "nullPointMode": "null as zero",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "span": 9,
+          "stack": true,
+          "steppedLine": true,
+          "targets": [
+            {
+              "refId": "A",
+              "target": "aliasByNode(keepLastValue(server.ns2.server-os.*, 5), 3)"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Dedicated Server - Operating System",
+          "tooltip": {
+            "shared": true,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "short",
+            "short"
+          ]
+        }
+      ],
+      "title": "New row"
+    },
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "250px",
+      "panels": [
+        {
+          "cacheTimeout": null,
+          "datasource": null,
+          "editable": true,
+          "error": false,
+          "id": 28,
+          "interval": null,
+          "isNew": true,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "legendType": "rightSide",
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "legendType": "On graph",
+          "links": [],
+          "maxDataPoints": 3,
+          "nullPointMode": "connected",
+          "nullText": null,
+          "pieType": "donut",
+          "span": 3,
+          "targets": [
+            {
+              "refId": "A",
+              "target": "aliasByNode(server.ns2.serversmodded.*, 3)"
+            }
+          ],
+          "title": "Vanilla / Modded (servers)",
+          "type": "piechart"
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": null,
+          "editable": true,
+          "error": false,
+          "fill": 5,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 25,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": true,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "nullPointMode": "null as zero",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "span": 9,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "refId": "A",
+              "target": "aliasByNode(keepLastValue(server.ns2.serversmodded.*, 5), 3)"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Vanilla / Modded (Servers)",
+          "tooltip": {
+            "shared": true,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "short",
+            "short"
+          ]
+        }
+      ],
+      "title": "New row"
+    },
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "450px",
+      "panels": [
+        {
+          "cacheTimeout": null,
+          "datasource": null,
+          "editable": true,
+          "error": false,
+          "id": 33,
+          "interval": null,
+          "isNew": true,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "legendType": "rightSide",
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "legendType": "On graph",
+          "links": [],
+          "maxDataPoints": "3",
+          "nullPointMode": "connected",
+          "nullText": null,
+          "pieType": "donut",
+          "span": 3,
+          "targets": [
+            {
+              "refId": "A",
+              "target": "aliasByNode(keepLastValue(removeBelowValue(server.ns2.servermapcount.*, 1), 1), 3)"
+            }
+          ],
+          "title": "Active Maps",
+          "type": "piechart"
+        },
+        {
+          "aliasColors": {},
+          "bars": true,
+          "datasource": null,
+          "editable": true,
+          "error": false,
+          "fill": 6,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "height": "",
+          "id": 17,
+          "legend": {
+            "alignAsTable": true,
+            "avg": false,
+            "current": false,
+            "hideEmpty": true,
+            "hideZero": false,
+            "max": false,
+            "min": false,
+            "rightSide": false,
+            "show": false,
+            "total": false,
+            "values": false
+          },
+          "lines": false,
+          "linewidth": 0,
+          "links": [],
+          "nullPointMode": "null as zero",
+          "percentage": false,
+          "pointradius": 3,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "span": 9,
+          "stack": true,
+          "steppedLine": false,
+          "targets": [
+            {
+              "refId": "A",
+              "target": "aliasByMetric(removeBelowValue(server.ns2.servermapcount.*, 1))"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Active Maps (with players)",
+          "tooltip": {
+            "shared": false,
+            "value_type": "individual"
+          },
+          "transparent": false,
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "short",
+            "short"
+          ]
+        }
+      ],
+      "title": "New row"
+    },
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "350px",
+      "panels": [
+        {
+          "cacheTimeout": null,
+          "datasource": null,
+          "editable": true,
+          "error": false,
+          "id": 36,
+          "interval": null,
+          "isNew": true,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "legendType": "rightSide",
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "legendType": "On graph",
+          "links": [],
+          "maxDataPoints": "1",
+          "nullPointMode": "connected",
+          "nullText": null,
+          "pieType": "donut",
+          "span": 3,
+          "targets": [
+            {
+              "refId": "A",
+              "target": "aliasByNode(server.ns2.serverversioncount.*, 3)"
+            }
+          ],
+          "title": "Server Versions",
+          "transparent": false,
+          "type": "piechart"
         },
         {
           "aliasColors": {},
@@ -244,13 +1135,17 @@
           "id": 18,
           "leftYAxisLabel": "Total Servers",
           "legend": {
-            "avg": false,
-            "current": false,
-            "max": false,
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "hideEmpty": true,
+            "hideZero": true,
+            "max": true,
             "min": false,
-            "show": false,
+            "rightSide": true,
+            "show": true,
             "total": false,
-            "values": false
+            "values": true
           },
           "lines": true,
           "linewidth": 2,
@@ -261,13 +1156,13 @@
           "points": false,
           "renderer": "flot",
           "seriesOverrides": [],
-          "span": 6,
+          "span": 9,
           "stack": true,
           "steppedLine": false,
           "targets": [
             {
               "refId": "A",
-              "target": "aliasByNode(keepLastValue(server.ns2.serverversioncount.*, 10), 3)"
+              "target": "aliasByNode(keepLastValue(server.ns2.serverversioncount.*, 5), 3)"
             }
           ],
           "timeFrom": null,
@@ -284,70 +1179,48 @@
             "short",
             "short"
           ]
-        },
+        }
+      ],
+      "title": "Row"
+    },
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "500px",
+      "panels": [
         {
-          "aliasColors": {},
-          "bars": true,
+          "cacheTimeout": null,
           "datasource": null,
           "editable": true,
           "error": false,
-          "fill": 8,
-          "grid": {
-            "leftLogBase": 1,
-            "leftMax": null,
-            "leftMin": null,
-            "rightLogBase": 1,
-            "rightMax": null,
-            "rightMin": null,
-            "threshold1": null,
-            "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2": null,
-            "threshold2Color": "rgba(234, 112, 112, 0.22)"
-          },
-          "height": "400",
-          "id": 17,
+          "id": 35,
+          "interval": null,
+          "isNew": true,
           "legend": {
             "avg": false,
             "current": false,
+            "legendType": "rightSide",
             "max": false,
             "min": false,
-            "show": false,
+            "show": true,
             "total": false,
             "values": false
           },
-          "lines": false,
-          "linewidth": 1,
+          "legendType": "On graph",
           "links": [],
-          "nullPointMode": "null as zero",
-          "percentage": false,
-          "pointradius": 3,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "span": 6,
-          "stack": true,
-          "steppedLine": false,
+          "maxDataPoints": "1",
+          "nullPointMode": "connected",
+          "nullText": null,
+          "pieType": "donut",
+          "span": 3,
           "targets": [
             {
               "refId": "A",
-              "target": "aliasByMetric(server.ns2.servermapcount.*)"
+              "target": "aliasByNode(removeBelowValue(server.ns2.servermodcount.*, 5), 3)"
             }
           ],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "Active Maps (with players)",
-          "tooltip": {
-            "shared": false,
-            "value_type": "individual"
-          },
-          "transparent": false,
-          "type": "graph",
-          "x-axis": true,
-          "y-axis": true,
-          "y_formats": [
-            "short",
-            "short"
-          ]
+          "title": "Popular Mods",
+          "type": "piechart"
         },
         {
           "aliasColors": {},
@@ -368,20 +1241,21 @@
             "threshold2": null,
             "threshold2Color": "rgba(234, 112, 112, 0.22)"
           },
-          "height": "400",
+          "height": "450",
           "id": 19,
           "leftYAxisLabel": "Total Mods",
           "legend": {
-            "alignAsTable": false,
-            "avg": false,
-            "current": false,
-            "hideEmpty": false,
-            "max": false,
-            "min": false,
-            "rightSide": false,
-            "show": false,
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "hideEmpty": true,
+            "hideZero": true,
+            "max": true,
+            "min": true,
+            "rightSide": true,
+            "show": true,
             "total": false,
-            "values": false
+            "values": true
           },
           "lines": false,
           "linewidth": 1,
@@ -392,13 +1266,13 @@
           "points": false,
           "renderer": "flot",
           "seriesOverrides": [],
-          "span": 6,
+          "span": 9,
           "stack": true,
           "steppedLine": false,
           "targets": [
             {
               "refId": "A",
-              "target": "aliasByNode(removeBelowValue(server.ns2.servermodcount.*, 5), 3)"
+              "target": "aliasByNode(keepLastValue(removeBelowValue(server.ns2.servermodcount.*, 5), 2), 3)"
             }
           ],
           "timeFrom": null,
@@ -415,193 +1289,57 @@
             "short",
             "short"
           ]
-        },
+        }
+      ],
+      "title": "New row"
+    },
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "25px",
+      "panels": [
         {
-          "aliasColors": {},
-          "bars": true,
-          "datasource": null,
+          "content": "",
           "editable": true,
           "error": false,
-          "fill": 1,
-          "grid": {
-            "leftLogBase": 1,
-            "leftMax": null,
-            "leftMin": null,
-            "rightLogBase": 1,
-            "rightMax": null,
-            "rightMin": null,
-            "threshold1": null,
-            "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2": null,
-            "threshold2Color": "rgba(234, 112, 112, 0.22)"
-          },
-          "id": 20,
-          "legend": {
-            "avg": false,
-            "current": false,
-            "max": false,
-            "min": false,
-            "show": true,
-            "total": false,
-            "values": false
-          },
-          "lines": false,
-          "linewidth": 2,
+          "id": 37,
+          "isNew": true,
           "links": [],
-          "nullPointMode": "null as zero",
-          "percentage": false,
-          "pointradius": 5,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "span": 6,
-          "stack": true,
-          "steppedLine": false,
-          "targets": [
-            {
-              "refId": "A",
-              "target": "aliasByNode(keepLastValue(server.ns2.servercountrycount.*, 10), 3)"
-            }
-          ],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "Total Servers by Country",
-          "tooltip": {
-            "shared": true,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "x-axis": true,
-          "y-axis": true,
-          "y_formats": [
-            "short",
-            "short"
-          ]
-        },
+          "mode": "markdown",
+          "span": 12,
+          "style": {},
+          "title": "Below are GameType Specific stats",
+          "type": "text"
+        }
+      ],
+      "title": "New row"
+    },
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "25px",
+      "panels": [
         {
-          "aliasColors": {},
-          "bars": true,
-          "datasource": null,
+          "content": "",
           "editable": true,
           "error": false,
-          "fill": 1,
-          "grid": {
-            "leftLogBase": 1,
-            "leftMax": null,
-            "leftMin": null,
-            "rightLogBase": 1,
-            "rightMax": null,
-            "rightMin": null,
-            "threshold1": null,
-            "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2": null,
-            "threshold2Color": "rgba(234, 112, 112, 0.22)"
-          },
-          "id": 21,
-          "legend": {
-            "avg": false,
-            "current": false,
-            "max": false,
-            "min": false,
-            "show": true,
-            "total": false,
-            "values": false
-          },
-          "lines": false,
-          "linewidth": 2,
+          "id": 42,
+          "isNew": true,
           "links": [],
-          "nullPointMode": "null as zero",
-          "percentage": false,
-          "pointradius": 5,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "span": 6,
-          "stack": true,
-          "steppedLine": false,
-          "targets": [
-            {
-              "refId": "A",
-              "target": "aliasByNode(keepLastValue(server.ns2.servercountryactivecount.*, 10), 3)"
-            }
-          ],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "Servers by Country with Players",
-          "tooltip": {
-            "shared": true,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "x-axis": true,
-          "y-axis": true,
-          "y_formats": [
-            "short",
-            "short"
-          ]
-        },
-        {
-          "aliasColors": {},
-          "bars": true,
-          "datasource": null,
-          "editable": true,
-          "error": false,
-          "fill": 1,
-          "grid": {
-            "leftLogBase": 1,
-            "leftMax": null,
-            "leftMin": null,
-            "rightLogBase": 1,
-            "rightMax": null,
-            "rightMin": null,
-            "threshold1": null,
-            "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2": null,
-            "threshold2Color": "rgba(234, 112, 112, 0.22)"
-          },
-          "id": 22,
-          "legend": {
-            "avg": false,
-            "current": false,
-            "max": false,
-            "min": false,
-            "show": true,
-            "total": false,
-            "values": false
-          },
-          "lines": false,
-          "linewidth": 2,
-          "links": [],
-          "nullPointMode": "null as zero",
-          "percentage": false,
-          "pointradius": 5,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "span": 9,
-          "stack": true,
-          "steppedLine": false,
-          "targets": [
-            {
-              "refId": "A",
-              "target": "aliasByNode(keepLastValue(server.ns2.servercountryplayercount.*, 10), 3)"
-            }
-          ],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "Players by Country (Server)",
-          "tooltip": {
-            "shared": true,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "x-axis": true,
-          "y-axis": true,
-          "y_formats": [
-            "short",
-            "short"
-          ]
-        },
+          "mode": "markdown",
+          "span": 12,
+          "style": {},
+          "title": "Gametype: Rookie Only",
+          "type": "text"
+        }
+      ],
+      "title": "New row"
+    },
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "250px",
+      "panels": [
         {
           "cacheTimeout": null,
           "colorBackground": false,
@@ -615,8 +1353,9 @@
           "editable": true,
           "error": false,
           "format": "none",
-          "id": 23,
+          "id": 39,
           "interval": null,
+          "isNew": true,
           "links": [],
           "maxDataPoints": 100,
           "nullPointMode": "connected",
@@ -625,21 +1364,21 @@
           "postfixFontSize": "50%",
           "prefix": "",
           "prefixFontSize": "50%",
-          "span": 3,
+          "span": 2,
           "sparkline": {
             "fillColor": "rgba(31, 118, 189, 0.18)",
-            "full": true,
+            "full": false,
             "lineColor": "rgb(31, 120, 193)",
             "show": true
           },
           "targets": [
             {
               "refId": "A",
-              "target": "countSeries(server.ns2.*.*.version)"
+              "target": "keepLastValue(server.ns2.statsbycategory.rookie_only.server_count, 1)"
             }
           ],
           "thresholds": "",
-          "title": "Total Servers",
+          "title": "Rookie Only (Servers)",
           "type": "singlestat",
           "valueFontSize": "80%",
           "valueMaps": [
@@ -650,13 +1389,385 @@
             }
           ],
           "valueName": "avg"
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": null,
+          "editable": true,
+          "error": false,
+          "fill": 2,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 38,
+          "isNew": true,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "hideEmpty": true,
+            "hideZero": true,
+            "max": true,
+            "min": false,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "nullPointMode": "null as zero",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "span": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "refId": "A",
+              "target": "alias(keepLastValue(server.ns2.statsbycategory.rookie_only.maxPlayers, 5), 'Server Slots')"
+            },
+            {
+              "refId": "B",
+              "target": "alias(keepLastValue(server.ns2.statsbycategory.rookie_only.numberOfPlayers, 5), 'Players')"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Rookie Only ( Players / ServerSlots )",
+          "tooltip": {
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "none",
+            "none"
+          ]
         }
       ],
-      "title": "Row"
+      "title": "New row"
+    },
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "25px",
+      "panels": [
+        {
+          "content": "",
+          "editable": true,
+          "error": false,
+          "id": 43,
+          "isNew": true,
+          "links": [],
+          "mode": "markdown",
+          "span": 12,
+          "style": {},
+          "title": "Gametype: ENSL (http://ensl.org)",
+          "type": "text"
+        }
+      ],
+      "title": "New row"
+    },
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "250px",
+      "panels": [
+        {
+          "cacheTimeout": null,
+          "colorBackground": false,
+          "colorValue": false,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "datasource": null,
+          "editable": true,
+          "error": false,
+          "format": "none",
+          "id": 40,
+          "interval": null,
+          "isNew": true,
+          "links": [],
+          "maxDataPoints": 100,
+          "nullPointMode": "connected",
+          "nullText": null,
+          "postfix": "",
+          "postfixFontSize": "50%",
+          "prefix": "",
+          "prefixFontSize": "50%",
+          "span": 2,
+          "sparkline": {
+            "fillColor": "rgba(31, 118, 189, 0.18)",
+            "full": false,
+            "lineColor": "rgb(31, 120, 193)",
+            "show": true
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "target": "keepLastValue(server.ns2.statsbycategory.nsl.server_count, 1)"
+            }
+          ],
+          "thresholds": "",
+          "title": "ENSL (Servers)",
+          "type": "singlestat",
+          "valueFontSize": "80%",
+          "valueMaps": [
+            {
+              "op": "=",
+              "text": "N/A",
+              "value": "null"
+            }
+          ],
+          "valueName": "avg"
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": null,
+          "editable": true,
+          "error": false,
+          "fill": 2,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 41,
+          "isNew": true,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "hideEmpty": true,
+            "hideZero": true,
+            "max": true,
+            "min": false,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "nullPointMode": "null as zero",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "span": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "refId": "A",
+              "target": "alias(keepLastValue(server.ns2.statsbycategory.nsl.maxPlayers, 5), 'Server Slots')"
+            },
+            {
+              "refId": "B",
+              "target": "alias(keepLastValue(server.ns2.statsbycategory.nsl.numberOfPlayers, 5), 'Players')"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "ENSL ( Players / ServerSlots )",
+          "tooltip": {
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "none",
+            "none"
+          ]
+        }
+      ],
+      "title": "New row"
+    },
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "25px",
+      "panels": [
+        {
+          "content": "",
+          "editable": true,
+          "error": false,
+          "id": 44,
+          "isNew": true,
+          "links": [],
+          "mode": "markdown",
+          "span": 12,
+          "style": {},
+          "title": "Gametype: Vanilla/Normal",
+          "type": "text"
+        }
+      ],
+      "title": "New row"
+    },
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "250px",
+      "panels": [
+        {
+          "cacheTimeout": null,
+          "colorBackground": false,
+          "colorValue": false,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "datasource": null,
+          "editable": true,
+          "error": false,
+          "format": "none",
+          "id": 45,
+          "interval": null,
+          "isNew": true,
+          "links": [],
+          "maxDataPoints": 100,
+          "nullPointMode": "connected",
+          "nullText": null,
+          "postfix": "",
+          "postfixFontSize": "50%",
+          "prefix": "",
+          "prefixFontSize": "50%",
+          "span": 2,
+          "sparkline": {
+            "fillColor": "rgba(31, 118, 189, 0.18)",
+            "full": false,
+            "lineColor": "rgb(31, 120, 193)",
+            "show": true
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "target": "sumSeries(server.ns2.statsbycategory.{normal,rookie}.server_count)"
+            }
+          ],
+          "thresholds": "",
+          "title": "Vanilla / Normal (Servers)",
+          "type": "singlestat",
+          "valueFontSize": "80%",
+          "valueMaps": [
+            {
+              "op": "=",
+              "text": "N/A",
+              "value": "null"
+            }
+          ],
+          "valueName": "avg"
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": null,
+          "decimals": null,
+          "editable": true,
+          "error": false,
+          "fill": 2,
+          "grid": {
+            "leftLogBase": 1,
+            "leftMax": null,
+            "leftMin": null,
+            "rightLogBase": 1,
+            "rightMax": null,
+            "rightMin": null,
+            "threshold1": null,
+            "threshold1Color": "rgba(216, 200, 27, 0.27)",
+            "threshold2": null,
+            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+          },
+          "id": 46,
+          "isNew": true,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "hideEmpty": false,
+            "hideZero": false,
+            "max": true,
+            "min": false,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "nullPointMode": "null as zero",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "span": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "refId": "A",
+              "target": "alias(sumSeries(keepLastValue(server.ns2.statsbycategory.{normal,rookie}.maxPlayers, 5)), 'Server Slots')"
+            },
+            {
+              "refId": "B",
+              "target": "alias(sumSeries(keepLastValue(server.ns2.statsbycategory.{normal,rookie}.numberOfPlayers, 5)), 'Players')"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Vanilla/Normal ( Players / ServerSlots )",
+          "tooltip": {
+            "shared": true,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "x-axis": true,
+          "y-axis": true,
+          "y_formats": [
+            "none",
+            "none"
+          ]
+        }
+      ],
+      "title": "New row"
     }
   ],
   "time": {
-    "from": "now-48h",
+    "from": "now-24h",
     "to": "now"
   },
   "timepicker": {
@@ -689,7 +1800,7 @@
     "list": []
   },
   "refresh": "5m",
-  "schemaVersion": 7,
-  "version": 107,
+  "schemaVersion": 8,
+  "version": 241,
   "links": []
 }

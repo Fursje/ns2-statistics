@@ -7,8 +7,13 @@ use Core\Language;
 
 if (isset($data['server_details'])) {
 	foreach ($data['panels'] as $panel_frame) {
-		print '<p>'.$panel_frame.'</p><br>';
+		print '<div>'.$panel_frame.'</div>';
 	}
+  print "<div>\n";
+  print $data['smokeping_panel'];
+  print "<center><small>Smokeping measures the network latency to the servers and show the min/max/avg/loss in 1 graph.</small></center>";
+  print "</div>\n";
+  print "<br>\n";
 } Else {
         ?>
         <div class="alert alert-danger" role="alert">

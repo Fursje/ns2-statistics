@@ -157,7 +157,7 @@ class grafana {
 				),
 				array(
 					"alias"=> "max",
-					"color"=> "#6ED0E0",
+					"color"=> "#0A437C",
 					"fillBelowTo"=> "min",
 					"lines"=> false
 				),
