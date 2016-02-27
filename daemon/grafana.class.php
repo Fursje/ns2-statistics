@@ -113,7 +113,7 @@ class grafana {
 		$host = grafana::ip2field($host);
 		$data = array(
 			'editable' => true,
-			'fill' => 1,
+			'fill' => 0,
 			'grid' => array(
 				"leftLogBase"=> 1,
 				"leftMax"=> null,
