@@ -95,11 +95,28 @@ class serverstatistics_ns2 extends serverstatistics {
 		$dashboard_players = $this->grafana->prepareDashboardDefault('Natural Selection 2 - Server - Players (autogen)','natural-selection-2-server-players-autogen',$rows);
 		$this->grafana->prepareDashboard($dashboard_players);
 
+		// Create Dashboard Smokeping
+		$id_counter = 1;
+		$rows = array();
+		foreach ($this->jsonData['servers'] as $host => $value) {
+			if ( array_key_exists($value['host'],$this->jsonData['hosts']) && array_key_exists('smokeping_id',$this->jsonData['hosts'][$value['host']]['graphs']) ) { continue; }
+			$panels = array();
+
+			$this->jsonData['hosts'][$value['host']]['graphs']['smokeping_id'] = $id_counter;
+			$panels[] = $this->grafana->createPanel_Smokeping($value['host'],$value['host'],$id_counter );
+			$id_counter++;
+
+			$rows[] = $this->grafana->createRow($value['host'], 250, $panels);
+		}
+
+		$dashboard_smokeping = $this->grafana->prepareDashboardDefault('Natural Selection 2 - Server - Smokeping (autogen)','natural-selection-2-server-smokeping-autogen',$rows);
+		$this->grafana->prepareDashboard($dashboard_smokeping);
 
 		// some sort of change check so we dont upload a dash every 5min :P
 		if ($this->dev_mode == False) {
 			$this->grafana->sendDashboard($dashboard_info['meta']['slug'].".json");
 			$this->grafana->sendDashboard($dashboard_players['meta']['slug'].".json");
+			$this->grafana->sendDashboard($dashboard_smokeping['meta']['slug'].".json");
 		}
 	}
 

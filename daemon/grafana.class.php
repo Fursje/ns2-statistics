@@ -109,7 +109,103 @@ class grafana {
 	public static function ip2field($ip) {
 		return str_replace(".","_",$ip);
 	}
+	public static function createPanel_Smokeping($name,$host, $id = null) {
+		$host = grafana::ip2field($host);
+		$data = array(
+			'editable' => true,
+			'fill' => 1,
+			'grid' => array(
+				"leftLogBase"=> 1,
+				"leftMax"=> null,
+				"leftMin"=> null,
+				"rightLogBase"=> 1,
+				"rightMax"=> 100,
+				"rightMin"=> 0,
+				"threshold1"=> null,
+				"threshold1Color"=> "rgba(216, 200, 27, 0.27)",
+				"threshold2"=> null,
+				"threshold2Color"=> "rgba(234, 112, 112, 0.22)",
+			),
+			'id' => $id,
+			'legend' => array(
+				"alignAsTable"=> true,
+				"avg"=> true,
+				"current"=> true,
+				"max"=> true,
+				"min"=> true,
+				"rightSide"=> false,
+				"show"=> true,
+				"total"=> false,
+				"values"=> true,
+			),
+			'lines' => true,
+			'linewidth' => 1,
+			'nullPointMode' => 'connected',
+			'pointradius' => 5,
+			'renderer' => 'flot',
+			"rightYAxisLabel" => "packetloss",
+			'span' => 12,
 
+			"seriesOverrides" => array(
+				array(
+					"alias"=> "loss",
+					"bars"=> true,
+					"color"=> "#BF1B00",
+					"lines"=> false,
+					"pointradius"=> 1,
+					"yaxis"=> 2
+				),
+				array(
+					"alias"=> "max",
+					"color"=> "#6ED0E0",
+					"fillBelowTo"=> "min",
+					"lines"=> false
+				),
+				array(
+					"alias"=> "min",
+					"color"=> "#7EB26D",
+					"lines"=> false
+			  ),
+				array(
+					"alias"=> "avg",
+					"color"=> "#EAB839",
+					"fillBelowTo"=> "min"
+				),
+			),
+
+			'targets' => array(),
+			'title' => 'Smokeping from '.$name,
+			'tooltip' => array(
+				'value_type' => 'cumulative',
+			),
+			'type' => 'graph',
+			'x-axis' => true,
+			'y-axis' => true,
+			'y_formats' => array('ms','percent'),
+
+			'steppedLine' => false,
+			"stack" => false,
+		);
+		$targets[] = array(
+			'refId' => 'A',
+			'target' => sprintf("aliasByNode(keepLastValue(server.ns2.smokeping.%s.min, 1), 4)",$host),
+		);
+		$targets[] = array(
+			'refId' => 'B',
+			'target' => sprintf("aliasByNode(keepLastValue(server.ns2.smokeping.%s.max, 1), 4)",$host),
+		);
+		$targets[] = array(
+			'refId' => 'C',
+			'target' => sprintf("aliasByNode(keepLastValue(server.ns2.smokeping.%s.avg, 1), 4)",$host),
+		);
+		$targets[] = array(
+			'refId' => 'D',
+			'target' => sprintf("aliasByNode(keepLastValue(asPercent(server.ns2.smokeping.%s.loss, 100), 1), 4)",$host),
+		);
+
+		$data['targets'] = $targets;
+		return $data;
+	}
 	public static function createPanel_HostPlayers($name,$host, $id = null) {
 		$host = grafana::ip2field($host);
 		$data = array(
