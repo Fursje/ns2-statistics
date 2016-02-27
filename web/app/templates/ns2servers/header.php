@@ -80,6 +80,8 @@ $hooks = Hooks::get();
 				</li>
 				<li><a href="/workshop">Workshop Backup</a>
 				</li>
+				<li><a href="/smokeping">Smokeping</a>
+				</li>
 				<li><a href="/contact">Contact</a>
 				</li>
 			    </ul>

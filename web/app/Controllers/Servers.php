@@ -132,4 +132,13 @@ class Servers extends Controller
 		View::render('servers/workshop', $data);
 		View::renderTemplate('footer', $data);
 	}
+
+	public function contact() {
+		$data['title'] = "Contact";
+		$data['description'] = "Natural Selection II - Contact the site maintainer";
+
+		View::renderTemplate('header', $data);
+		View::render('servers/contact', $data);
+		View::renderTemplate('footer', $data);
+	}
 }
