@@ -174,7 +174,7 @@ class grafana {
 			),
 
 			'targets' => array(),
-			'title' => 'Smokeping from '.$name,
+			'title' => 'Smokeping ('.$name.')',
 			'tooltip' => array(
 				'value_type' => 'cumulative',
 			),
