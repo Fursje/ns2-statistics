@@ -38,6 +38,7 @@ class serverstatistics_ns2 extends serverstatistics {
 		$this->prepareServerVersionCount();
 		$this->prepareServerbyCategory();
 		$this->prepareServersModded();
+
 		$this->prepareUweForcedMods();
 
 		$this->createPingStatistics();
@@ -218,7 +219,26 @@ class serverstatistics_ns2 extends serverstatistics {
 	}	
 	*/
 
-
+	protected function getHiveWhitelist() {
+		// http://hive.naturalselection2.com/api/get/whitelistedServers/
+		$tdiff = time() - $this->UWEMods_lastcheck;
+		if ($tdiff > 1800) {
+			$this->print_cli("info","getUweForcedMods: checking for new forced mods.");
+			// URL: http://skymarshal.naturalselection2.com/mods/
+			if (FALSE !== ($tmp_m = file_get_contents("http://skymarshal.naturalselection2.com/mods/"))) {
+				$tmp1 = trim($tmp_m);
+				$mods = explode(" ",$tmp1);
+				if (count($mods) > 0) {
+					$this->UweMods = $mods;
+					$this->UWEMods_lastcheck = time();
+					$this->print_cli("info","getUweForcedMods: found ".count($mods)." mods.");
+				}
+			} else {
+				$this->UWEMods = array();
+				$this->print_cli("info","getUweForcedMods: something went wrong; clearing UWEMods.");
+			}
+		}
+	}
 
 	/* Game Specific Stats Functions */
 
@@ -332,6 +352,7 @@ class serverstatistics_ns2 extends serverstatistics {
 
 		/* Define serverTags */
 		$tags = explode("|",$data['info']['serverTags']);
+		#print_r($data);
 		#print_r($tags);
 		/*
 			Array
@@ -369,16 +390,18 @@ class serverstatistics_ns2 extends serverstatistics {
 		$category = "_none_";
 		$valid_cats = array(
 			'/^(nsl)$/',
+			'/^(last stand)$/',
 			'/^(siege)$/',
 			'/^(faded).*$/',
 			'/^(rookie_only)$/',
 			'/^(rookie)$/'
+
 		);
 		foreach ($tags as $tagU) {
 			$tag = (string) strtolower($tagU);
 			foreach ($valid_cats as $regex) {
 				if (preg_match($regex,$tag,$m)) {
-					$category = $m[1];
+					$category = str_replace(" ","_",$m[1]);
 					break 2;
 				}
 			}

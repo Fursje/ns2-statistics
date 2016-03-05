@@ -173,7 +173,7 @@ class serverstatistics {
 				$this->print_cli('info', 'Updating Masterlist');
 				$this->getServers();
 				$this->clearBlacklist();
-				#$this->serverList = array(array('188.63.57.183','27016'));
+				#$this->serverList = array(array('208.64.36.105','27016'));
 				#$this->serverList = array(array('89.105.209.250','27021'),array('136.243.170.231','27036'));
 				//85.14.226.223:27016
 				#$this->serverList = array(array('136.243.170.231','27036'));
