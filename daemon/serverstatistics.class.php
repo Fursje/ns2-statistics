@@ -382,6 +382,9 @@ class serverstatistics {
 	}
 
 	protected function print_cli($severity, $message) {
+		if ($this->dev_mode == False && $severity == "debug" ) {
+			return;
+		}
 		$message = sprintf("%s: %s\n",$severity,$message);
 		print $message;
 	}

@@ -13,6 +13,8 @@ class serverstatistics_ns2 extends serverstatistics {
 	protected $serverByCategory = array();
 	protected $serversModded = array('Modded'=>0,'Vanilla'=>0);
 	protected $serverPingData = array();
+	protected $UWEMods = array();
+	protected $UWEMods_lastcheck = 0;
 
 	public $masterlistQuery = "\\appid\\4920";
 	#private $masterlistQuery = "\\appid\\4920\\empty\\1";
@@ -220,22 +222,48 @@ class serverstatistics_ns2 extends serverstatistics {
 	/* Game Specific Stats Functions */
 
 	// Modded vs unmodded
-	protected function setServersModded($data) {
-		if (array_key_exists('serverTags', $data['info'])) {
-			$tags = explode("|",$data['info']['serverTags']);
-			switch($tags[2]) {
-				case 'M':
-					$this->serversModded['Modded']++;
-					break;
-				case 'V':
-					$this->serversModded['Vanilla']++;
-					break;
-				default:
-					// should never happen..
-					break;
+	protected function getUweForcedMods() {
+		// refresh every 30min
+		$tdiff = time() - $this->UWEMods_lastcheck;
+		if ($tdiff > 1800) {
+			$this->print_cli("info","getUweForcedMods: checking for new forced mods.");
+			// URL: http://skymarshal.naturalselection2.com/mods/
+			if (FALSE !== ($tmp_m = file_get_contents("http://skymarshal.naturalselection2.com/mods/"))) {
+				$tmp1 = trim($tmp_m);
+				$mods = explode(" ",$tmp1);
+				if (count($mods) > 0) { 
+					$this->UweMods = $mods;
+					$this->UWEMods_lastcheck = time();
+					$this->print_cli("info","getUweForcedMods: found ".count($mods)." mods.");
+				}
+			} else {
+				$this->UWEMods = array();
+				$this->print_cli("info","getUweForcedMods: something went wrong; clearing UWEMods.");
 			}
 		}
 	}
+	protected function setServersModded($data) {
+		$this->getUweForcedMods();
+		$found_mods = (int) 0;
+		foreach ($data['rules'] as $k => $v) {
+			if (preg_match("/^mods\[[\d]{1,}\]$/",$k,$m)) {
+				$smod = preg_split("/[\s]/",$v);
+				foreach ($smod as $modid) {
+					if (!in_array($modid,$this->UweMods)) {
+						$found_mods++;
+					} else {
+						$this->print_cli("debug","setServersModded: UWEMod found.. skipping $modid.");
+					}
+				}
+			}
+		}
+		if ($found_mods > 0) {
+			$this->serversModded['Modded']++;
+		} else {
+			$this->serversModded['Vanilla']++;
+		}
+	}
+
 	protected function prepareServersModded() {
 		foreach ($this->serversModded as $sm => $pc) {
 			$this->graphite_data[] = sprintf("server.%s.%s.%s %d %d",$this->module,'serversmodded',$sm , $pc, $this->update_time);
@@ -245,12 +273,18 @@ class serverstatistics_ns2 extends serverstatistics {
 	
 	// Server Popular mods
 	protected function setServerModCount($data) {
+		$this->getUweForcedMods();
 		foreach ($data['rules'] as $k => $v) {
 			if (preg_match("/^mods\[[\d]{1,}\]$/",$k,$m)) {
 				$smod = preg_split("/[\s]/",$v);
 				foreach ($smod as $modid) {
-					if (!array_key_exists($modid, $this->ServerModCount)) { $this->ServerModCount[$modid] = 0; }
-					$this->ServerModCount[$modid]++;
+					// Exclude UWE mods from the mod statistics as they are basically game changes and not custom mods.
+					if (!in_array($modid,$this->UweMods)) {
+						if (!array_key_exists($modid, $this->ServerModCount)) { $this->ServerModCount[$modid] = 0; }
+						$this->ServerModCount[$modid]++;
+					} else {
+						$this->print_cli("debug","setServerModCount: UWEMod found.. skipping $modid.");
+					}
 				}
 			}
 		}
