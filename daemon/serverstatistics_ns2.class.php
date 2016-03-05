@@ -38,6 +38,7 @@ class serverstatistics_ns2 extends serverstatistics {
 		$this->prepareServerVersionCount();
 		$this->prepareServerbyCategory();
 		$this->prepareServersModded();
+		$this->prepareUweForcedMods();
 
 		$this->createPingStatistics();
 
@@ -263,7 +264,11 @@ class serverstatistics_ns2 extends serverstatistics {
 			$this->serversModded['Vanilla']++;
 		}
 	}
-
+	protected function prepareUweForcedMods() {
+		foreach ($this->UweMods as $modid) {
+			$this->graphite_data[] = sprintf("server.%s.%s.%s %d %d",$this->module,'UweForcedMods', $modid , '1', $this->update_time);
+		}
+	}
 	protected function prepareServersModded() {
 		foreach ($this->serversModded as $sm => $pc) {
 			$this->graphite_data[] = sprintf("server.%s.%s.%s %d %d",$this->module,'serversmodded',$sm , $pc, $this->update_time);
