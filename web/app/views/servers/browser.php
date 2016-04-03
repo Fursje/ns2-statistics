@@ -29,9 +29,10 @@ use Helpers\Url;
 				<tbody class="searchable">
 					<?php
 					foreach ($data['servers'] as $k=>$v) {
+						if ($v['version'] >= $data['versions']['prod']) {
 					?>
 					<tr>
-						<td><button type="button" class="btn btn-success btn-xsm">Online</button></td>
+						<td><button type="button" class="btn btn-success btn-xsm">Working</button></td>
 						<td style="white-space:nowrap;">
 							<img src="<?php echo Url::templatePath()."blank.gif"; ?>" class="flag flag-<?php echo $v['country']; ?>" /> 
 							<a class="ip-href" href="/server/details/<?php echo $v['host']; ?>"><?php echo $v['host']; ?></a>:<?php echo $v['port']; ?>
@@ -43,7 +44,27 @@ use Helpers\Url;
 						<td><a class="btn btn-primary btn-xsm" href="/server/details/<?php echo $v['host']; ?>/<?php echo $v['port']; ?>" role="button">info</a></td>	
 					</tr>
 					<?php
+						}
 					}
+					foreach ($data['servers'] as $k=>$v) {
+						if ($v['version'] < $data['versions']['prod']) {
+					?>
+					<tr class="bg-danger">
+						<td><button type="button" class="btn btn-warning btn-xsm" title="The Server is running a old version.">Outdated</button></td>
+						<td style="white-space:nowrap;">
+							<img src="<?php echo Url::templatePath()."blank.gif"; ?>" class="flag flag-<?php echo $v['country']; ?>" /> 
+							<a class="ip-href" href="/server/details/<?php echo $v['host']; ?>"><?php echo $v['host']; ?></a>:<?php echo $v['port']; ?>
+						</td>
+						<td><?php echo $v['serverName']; ?></td>
+						<td><?php echo $v['mapName']; ?></td>
+						<td><?php echo $v['numberOfPlayers']." / ".$v['maxPlayers']; ?></td>
+						<td class="text-warning"><?php echo $v['version']; ?></td>
+						<td><a class="btn btn-primary btn-xsm" href="/server/details/<?php echo $v['host']; ?>/<?php echo $v['port']; ?>" role="button">info</a></td>	
+					</tr>
+					<?php
+
+						}
+					}				
 					?>
 
 				</tbody>

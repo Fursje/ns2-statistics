@@ -12,6 +12,7 @@ namespace Controllers;
 
 use Core\View;
 use Core\Controller;
+use Helpers\Ns2;
 
 class Servers extends Controller
 {
@@ -32,6 +33,7 @@ class Servers extends Controller
 			$srv_data = json_decode(file_get_contents('site_data.json'),true);
 			$data['servers'] = $srv_data['servers'];
 			$data['last_update'] = $srv_data['last_update'];
+			$data['versions'] = ns2::currentVersion($data['servers']);
 
 			usort($data['servers'],function ($a,$b) {
 				return $b['numberOfPlayers'] - $a['numberOfPlayers'];
