@@ -1,0 +1,4 @@
+---
+# ns2servers install directory
+ns2servers_install_dir: /home/sites/ns2servers/
+ns2servers_domain: ns2servers.net

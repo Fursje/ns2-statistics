@@ -1,0 +1,29 @@
+---
+- name: Install Apache2 & php5
+  apt: name={{ item }} state=latest
+  with_items:
+   - apache2
+   - libapache2-mod-php5
+
+- name: ns2servers.net vhost file
+  template: 
+    src: ns2servers.conf 
+    dest: /etc/apache2/sites-available/ns2servers.conf
+  notify: restart apache2
+
+- name: Create logs directory
+  file: path={{ ns2servers_install_dir }}/logs state=directory mode=0755
+
+- name: Enable needed apache modules
+  command: a2enmod {{ item }}
+  with_items:
+   - proxy
+   - proxy_http
+   - proxy_html
+   - rewrite
+  notify: restart apache2
+
+- name: Enable vhost file
+  command: a2ensite ns2servers.conf
+  notify: restart apache2
+

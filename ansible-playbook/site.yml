@@ -1,0 +1,11 @@
+---
+- name: Install ns2servers.net including apache/grafana/graphite
+  hosts: ns2servers-server
+  remote_user: root
+  
+  roles:
+    - common
+#    - graphite
+    - apache2
+#    - grafana
+    - ns2servers

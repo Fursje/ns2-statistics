@@ -1,0 +1,4 @@
+---
+- name: git clone
+  git: repo=https://github.com/Fursje/ns2-statistics.git
+       dest={{ ns2servers_install_dir }}
