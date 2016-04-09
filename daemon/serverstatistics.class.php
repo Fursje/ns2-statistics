@@ -176,7 +176,9 @@ class serverstatistics {
 				#$this->serverList = array(array('208.64.36.105','27016'));
 				#$this->serverList = array(array('89.105.209.250','27021'),array('136.243.170.231','27036'));
 				//85.14.226.223:27016
-				#$this->serverList = array(array('136.243.170.231','27036'));
+				#$this->serverList = array(array('80.127.150.123','29011'));
+				#$this->serverList = array(array('85.7.123.134','27016'));
+				#$this->serverList = array(array('85.229.112.183','27018'));
 				#$this->serverList = array(array('85.14.226.223','27016'),array('89.105.209.250','27021'));
 			}
 			// Graph all servers

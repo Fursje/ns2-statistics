@@ -15,6 +15,7 @@ class serverstatistics_ns2 extends serverstatistics {
 	protected $serverPingData = array();
 	protected $UWEMods = array();
 	protected $UWEMods_lastcheck = 0;
+	protected $SkillbyServerSize = array();
 
 	public $masterlistQuery = "\\appid\\4920";
 	#private $masterlistQuery = "\\appid\\4920\\empty\\1";
@@ -29,6 +30,7 @@ class serverstatistics_ns2 extends serverstatistics {
 		$this->setServerVersionCount($data);
 		$this->sortServerbyCategory($data);
 		$this->setServersModded($data);
+		$this->setServerHiveSkillAvg($data);
 
 		$this->gatherData($data);
 	}
@@ -38,6 +40,7 @@ class serverstatistics_ns2 extends serverstatistics {
 		$this->prepareServerVersionCount();
 		$this->prepareServerbyCategory();
 		$this->prepareServersModded();
+		$this->prepareServerHiveSkillAvg();
 
 		$this->prepareUweForcedMods();
 
@@ -223,19 +226,19 @@ class serverstatistics_ns2 extends serverstatistics {
 		// http://hive.naturalselection2.com/api/get/whitelistedServers/
 		$tdiff = time() - $this->UWEMods_lastcheck;
 		if ($tdiff > 1800) {
-			$this->print_cli("info","getUweForcedMods: checking for new forced mods.");
+			$this->print_cli("info","getHiveWhitelist: checking for new forced mods.");
 			// URL: http://skymarshal.naturalselection2.com/mods/
-			if (FALSE !== ($tmp_m = file_get_contents("http://skymarshal.naturalselection2.com/mods/"))) {
+			if (FALSE !== ($tmp_m = file_get_contents("http://hive.naturalselection2.com/api/get/whitelistedServers/"))) {
 				$tmp1 = trim($tmp_m);
 				$mods = explode(" ",$tmp1);
 				if (count($mods) > 0) {
 					$this->UweMods = $mods;
 					$this->UWEMods_lastcheck = time();
-					$this->print_cli("info","getUweForcedMods: found ".count($mods)." mods.");
+					$this->print_cli("info","getHiveWhitelist: found ".count($mods)." mods.");
 				}
 			} else {
 				$this->UWEMods = array();
-				$this->print_cli("info","getUweForcedMods: something went wrong; clearing UWEMods.");
+				$this->print_cli("info","getHiveWhitelist: something went wrong; clearing UWEMods.");
 			}
 		}
 	}
@@ -352,28 +355,7 @@ class serverstatistics_ns2 extends serverstatistics {
 
 		/* Define serverTags */
 		$tags = explode("|",$data['info']['serverTags']);
-		#print_r($data);
-		#print_r($tags);
-		/*
-			Array
-			(
-			    [0] => 277
-			    [1] => ns2
-			    [2] => M
-			    [3] => 149
-			    [4] => 34
-			    [5] => 34
-			    [6] => 32
-			    [7] => CHUD_0x0
-			    [8] => P_S2592
-			    [9] => shine
-			    [10] => NSL
-			    [11] => ServerTickrate30
-			    [12] => tickrate_29
-			)
-			modded?|tickrate|currentPerfScore|PerfScorewithQuality|perfQuality
-		*/
-		
+
 		// Not used
 		#$this->graphite_data[] = sprintf("server.%s.%s.%s.%s %d %d",$this->module,$host,$port,'version', $tags[0], $dtime);
 
@@ -384,9 +366,47 @@ class serverstatistics_ns2 extends serverstatistics {
 
 	}
 
-	public function sortServerbyCategory($data) {
+
+	public function setServerHiveSkillAvg($data) {
+		if ($data['info']['maxPlayers'] >= 12 ) {
+			$host = str_replace(".","_",$data['host']);
+			$port = $data['port'];
+			$tags = explode("|",$data['info']['serverTags']);
+
+			// Server avg player skill
+			foreach ($tags as $k=>$v) {
+				if (preg_match("/P_S(\d+)/",$v,$m)) {
+					$category = self::_getServerCategory($data);
+					// Server Specific
+					$this->graphite_data[] = sprintf("server.%s.hosts.%s.%s.%s %d %d",$this->module,$host,$port,'playerskill', $m[1], $this->update_time);
+
+					// Global average by slot size.
+					if ($data['info']['numberOfPlayers'] > 4) {
+						if (!array_key_exists($data['info']['maxPlayers'],$this->SkillbyServerSize[$category])) {
+							$this->SkillbyServerSize[$category][$data['info']['maxPlayers']] = array();
+						}
+						$this->SkillbyServerSize[$category][$data['info']['maxPlayers']][] = $m[1];
+					}
+
+					break;
+				}
+			}
+		}
+	}
+	public function prepareServerHiveSkillAvg() {
+		print_r($this->SkillbyServerSize);
+		foreach ($this->SkillbyServerSize as $serverCategory => $cdata) {
+			foreach ($cdata as $serverSize => $data) {
+				$serverScore = array_sum($data) / count($data);
+				$this->graphite_data[] = sprintf("server.%s.%s.%s.%s %d %d",$this->module,'playerskillbyserversize',$serverCategory , $serverSize ,$serverScore, $this->update_time);
+			}
+		}
+
+		$this->SkillbyServerSize = array();
+	}
+
+	public static function _getServerCategory($data) {
 		$tags = explode("|",$data['info']['serverTags']);
-		#$this->print_cli('DEBUG-TAG', $data['info']['serverTags']);
 		$category = "_none_";
 		$valid_cats = array(
 			'/^(nsl)$/',
@@ -407,7 +427,10 @@ class serverstatistics_ns2 extends serverstatistics {
 			}
 		}
 		if ($category == '_none_') { $category = 'normal'; }
-
+		return $category;
+	}
+	public function sortServerbyCategory($data) {
+		$category = self::_getServerCategory($data);
 		$this->serverByCategory[$category][] = $data;
 	}
 	protected function prepareServerbyCategory() {
@@ -434,6 +457,9 @@ class serverstatistics_ns2 extends serverstatistics {
 	public function clearServerbyCategory() {
 		$this->serverByCategory = array();
 	}
+
+
+
 
 }
 
