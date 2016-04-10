@@ -38,7 +38,7 @@ class grafana {
 		$curl_cmd = sprintf("%s -H 'Accept: application/json' -H 'Content-Type: application/json' -H 'Authorization: Bearer %s' -X POST %s -d @%s",$this->bin_curl,$this->apiKey,$curl_url, $uploadFile);
 		exec($curl_cmd);
 	}
-	
+
 	public function json2array($file) {
 		$a = file_get_contents($file);
 		$b = json_decode($a,true);
@@ -188,7 +188,8 @@ class grafana {
 			'target' => sprintf("alias(keepLastValue(server.ns2.hosts.%s.%s.playerskill, 1), 'HiveScore')",$host,$port),
 		);
 
-		$data['targets'] = $targets;		
+		$data['targets'] = $targets;
+		return $data;
 	}
 	public static function createPanel_Smokeping($name,$host, $id = null) {
 		$host = grafana::ip2field($host);
