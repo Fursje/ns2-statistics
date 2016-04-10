@@ -141,7 +141,7 @@ class grafana {
 			"values"=> true
 		  ),
 		  "lines"=> true,
-		  "linewidth"=> 2,
+		  "linewidth"=> 1,
 		  "links"=> array(),
 		  "nullPointMode"=> "null",
 		  "percentage"=> false,
@@ -359,7 +359,7 @@ class grafana {
 				"max"=> true,
 				"min"=> true,
 				"show"=> false,
-				"total"=> fasle,
+				"total"=> false,
 				"values"=> true,
 				"alignAsTable" => true,
 				"rightSide" => false
@@ -453,7 +453,7 @@ class grafana {
 				"max"=> true,
 				"min"=> true,
 				"show"=> false,
-				"total"=> fasle,
+				"total"=> false,
 				"values"=> true,
 				"alignAsTable" => true,
 				"rightSide" => false

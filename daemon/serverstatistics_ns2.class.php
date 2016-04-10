@@ -400,7 +400,7 @@ class serverstatistics_ns2 extends serverstatistics {
 
 					// Global average by slot size.
 					if ($data['info']['numberOfPlayers'] > 4) {
-						if (!array_key_exists($data['info']['maxPlayers'],$this->SkillbyServerSize[$category])) {
+						if (!@array_key_exists($data['info']['maxPlayers'],$this->SkillbyServerSize[$category])) {
 							$this->SkillbyServerSize[$category][$data['info']['maxPlayers']] = array();
 						}
 						$this->SkillbyServerSize[$category][$data['info']['maxPlayers']][] = $m[1];

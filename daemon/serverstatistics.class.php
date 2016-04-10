@@ -187,6 +187,7 @@ class serverstatistics {
 				if ($this->onBlacklist($srv[0],$srv[1])) { continue; }
 
 				if (($serverDetails = $this->getDetails($srv[0],$srv[1])) !== FALSE) {
+					#print_r($serverDetails);
 					$p_msg = sprintf("Found [%s:%s] [%s] [%s] [%d/%d]",$serverDetails['host'],$serverDetails['port'], $serverDetails['info']['serverName'], $serverDetails['info']['mapName'],$serverDetails['info']['numberOfPlayers'],$serverDetails['info']['maxPlayers']);
 					$this->print_cli('info', $p_msg);
 					
