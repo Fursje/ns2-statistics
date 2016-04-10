@@ -111,6 +111,7 @@ class grafana {
 	}
 
 	public static function createPanel_ServerHivescore($name,$host,$port,$id = null) {
+		$host = grafana::ip2field($host);
 		$data = array(
 		  "aliasColors"=> array(),
 		  "bars"=> false,
