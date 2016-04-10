@@ -61,6 +61,7 @@ class Servers extends Controller
 
 		$panel_url = '<iframe src="/grafana/dashboard-solo/db/natural-selection-2-servers-autogen?panelId=%d&theme=light" style="width: 100%%;" height="250" frameborder="0" scrolling="no"></iframe>';
 		$panel_smokeping = '<iframe src="/grafana/dashboard-solo/db/natural-selection-2-server-smokeping-autogen?panelId=%d&theme=light" style="width: 100%%;" height="300" frameborder="0" scrolling="no"></iframe>';
+		$panel_hivescore = '<iframe src="/grafana/dashboard-solo/db/natural-selection-2-server-hivescore-autogen?panelId=%d&theme=light" style="width: 100%%;" height="250" frameborder="0" scrolling="no"></iframe>';
 
 		$server = sprintf("%s:%d",$host,$port);
 		if (file_exists('site_data.json')) {
@@ -71,6 +72,7 @@ class Servers extends Controller
 				$data['description'] = "Natural Selection II - ".$data['title'];
 				$data['panels']['info'] = sprintf($panel_url,$data['server_details']['graphs']['info_id']);
 				$data['panels']['perf'] = sprintf($panel_url,$data['server_details']['graphs']['perf_id']);
+				$data['panels']['hivescore'] = sprintf($panel_hivescore,$data['server_details']['graphs']['hivescore_id']);
 				} Else {
 				$data['title'] = "Server Details: ?";
 				$data['panels'] = array();
