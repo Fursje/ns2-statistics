@@ -36,10 +36,9 @@ class grafana {
 	public function sendDashboard($uploadFile) {
 		$curl_url = sprintf("http://%s:%s/grafana/api/dashboards/db",$this->host,$this->port);
 		$curl_cmd = sprintf("%s -H 'Accept: application/json' -H 'Content-Type: application/json' -H 'Authorization: Bearer %s' -X POST %s -d @%s",$this->bin_curl,$this->apiKey,$curl_url, $uploadFile);
-		print "debug: $curl_cmd\n";
 		exec($curl_cmd);
-		
 	}
+	
 	public function json2array($file) {
 		$a = file_get_contents($file);
 		$b = json_decode($a,true);
@@ -109,6 +108,87 @@ class grafana {
 	}
 	public static function ip2field($ip) {
 		return str_replace(".","_",$ip);
+	}
+
+	public static function createPanel_ServerHivescore($name,$host,$port,$id = null) {
+		$data = array(
+		  "aliasColors"=> array(),
+		  "bars"=> false,
+		  "datasource"=> null,
+		  "editable"=> true,
+		  "error"=> false,
+		  "fill"=> 1,
+		  "grid"=> array(
+			"threshold1"=> null,
+			"threshold1Color"=> "rgba(216, 200, 27, 0.27)",
+			"threshold2"=> null,
+			"threshold2Color"=> "rgba(234, 112, 112, 0.22)"
+		  ),
+		  "id"=> $id,
+		  "isNew"=> true,
+		  "legend"=> array(
+			"alignAsTable"=> true,
+			"avg"=> true,
+			"current"=> true,
+			"hideEmpty"=> true,
+			"hideZero"=> true,
+			"max"=> true,
+			"min"=> true,
+			"rightSide"=> false,
+			"show"=> true,
+			"total"=> false,
+			"values"=> true
+		  ),
+		  "lines"=> true,
+		  "linewidth"=> 2,
+		  "links"=> array(),
+		  "nullPointMode"=> "null",
+		  "percentage"=> false,
+		  "pointradius"=> 1,
+		  "points"=> true,
+		  "renderer"=> "flot",
+		  "seriesOverrides"=> array(),
+		  "span"=> 12,
+		  "stack"=> false,
+		  "steppedLine"=> false,
+		  "targets"=> array(),
+		  "timeFrom"=> null,
+		  "timeShift"=> null,
+		  "title"=> $name. " - Hivescore",
+		  "tooltip"=> array(
+			"msResolution"=> false,
+			"shared"=> true,
+			"value_type"=> "cumulative"
+		  ),
+		  "type"=> "graph",
+		  "xaxis"=> array(
+			"show"=> true
+		  ),
+		  "yaxes"=> array(
+			array(
+			  "format"=> "none",
+			  "label"=> "HiveScore",
+			  "logBase"=> 1,
+			  "max"=> null,
+			  "min"=> null,
+			  "show"=> true
+			),
+			array(
+			  "format"=> "short",
+			  "label"=> "",
+			  "logBase"=> 1,
+			  "max"=> null,
+			  "min"=> null,
+			  "show"=> true
+			)
+		  )
+		);
+		$targets[] = array(
+			'refId' => 'D',
+			'target' => sprintf("alias(keepLastValue(server.ns2.hosts.%s.%s.playerskill, 1), 'HiveScore')",$host,$port),
+		);
+
+		$data['targets'] = $targets;		
 	}
 	public static function createPanel_Smokeping($name,$host, $id = null) {
 		$host = grafana::ip2field($host);

@@ -119,11 +119,29 @@ class serverstatistics_ns2 extends serverstatistics {
 		$dashboard_smokeping = $this->grafana->prepareDashboardDefault('Natural Selection 2 - Server - Smokeping (autogen)','natural-selection-2-server-smokeping-autogen',$rows);
 		$this->grafana->prepareDashboard($dashboard_smokeping);
 
+		// Create Dashboard Server Hivescore
+		$id_counter = 1;
+		$rows = array();
+		foreach ($this->jsonData['servers'] as $host => $value) {
+			$panels = array();
+
+			$this->jsonData['servers'][$host]['graphs']['hivescore_id'] = $id_counter;
+			$panels[] = $this->grafana->createPanel_ServerHivescore($value['serverName'],$value['host'],$value['port'],$id_counter );
+			$id_counter++;
+
+			$rows[] = $this->grafana->createRow($host, 250, $panels);
+		}
+
+		$dashboard_serverhivescore = $this->grafana->prepareDashboardDefault('Natural Selection 2 - Server Hivescore (autogen)','natural-selection-2-server-hivescore-autogen',$rows);
+		$this->grafana->prepareDashboard($dashboard_serverhivescore);
+
+
 		// some sort of change check so we dont upload a dash every 5min :P
 		if ($this->dev_mode == False) {
 			$this->grafana->sendDashboard($dashboard_info['meta']['slug'].".json");
 			$this->grafana->sendDashboard($dashboard_players['meta']['slug'].".json");
 			$this->grafana->sendDashboard($dashboard_smokeping['meta']['slug'].".json");
+			$this->grafana->sendDashboard($dashboard_serverhivescore['meta']['slug'].".json");
 		}
 	}
 
