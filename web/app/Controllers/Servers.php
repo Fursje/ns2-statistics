@@ -88,7 +88,7 @@ class Servers extends Controller
 
 	public function details_ip($host) {
 		$found_servers = array();
-		$panel_players = '<iframe src="/grafana/dashboard-solo/db/natural-selection-2-server-players-autogen?panelId=%d&fullscreen&theme=light" style="width: 100%%;" height="200" frameborder="0" scrolling="no"></iframe>';
+		$panel_players = '<iframe src="/grafana/dashboard-solo/db/natural-selection-2-server-players-autogen?panelId=%d&theme=light" style="width: 100%%;" height="200" frameborder="0" scrolling="no"></iframe>';
 		$panel_url = '<iframe src="/grafana/dashboard-solo/db/natural-selection-2-servers-autogen?panelId=%d&theme=light" style="width: 50%%;" height="200" frameborder="0" scrolling="no"></iframe>';
 		$panel_smokeping = '<iframe src="/grafana/dashboard-solo/db/natural-selection-2-server-smokeping-autogen?panelId=%d&theme=light" style="width: 100%%;" height="300" frameborder="0" scrolling="no"></iframe>';
 
