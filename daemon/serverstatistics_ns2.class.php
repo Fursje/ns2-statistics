@@ -132,7 +132,7 @@ class serverstatistics_ns2 extends serverstatistics {
 			$rows[] = $this->grafana->createRow($host, 250, $panels);
 		}
 
-		$dashboard_serverhivescore = $this->grafana->prepareDashboardDefault('Natural Selection 2 - Server Hivescore (autogen)','natural-selection-2-server-hivescore-autogen',$rows);
+		$dashboard_serverhivescore = $this->grafana->prepareDashboardDefault('Natural Selection 2 - Server - Hivescore (autogen)','natural-selection-2-server-hivescore-autogen',$rows);
 		$this->grafana->prepareDashboard($dashboard_serverhivescore);
 
 
