@@ -28,7 +28,7 @@ class Smokeping extends Controller
 	{
 		$data['title'] = 'Smokeping';
 		$data['description'] = "Natural Selection II - Smokeping what is it?";
-		$panel_smokeping = '<iframe src="/grafana/dashboard-solo/db/natural-selection-2-server-smokeping-autogen?panelId=%d&fullscreen&theme=light" style="width: 50%%;" height="200" frameborder="0" scrolling="no"></iframe>';
+		$panel_smokeping = '<iframe src="/grafana/dashboard-solo/db/natural-selection-2-server-smokeping-autogen?panelId=%d&theme=light" style="width: 50%%;" height="300" frameborder="0" scrolling="no"></iframe>';
 		$data['smokeping_panels'] = array();
 
 		if (file_exists('site_data.json')) {

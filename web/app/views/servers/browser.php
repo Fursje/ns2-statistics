@@ -9,7 +9,7 @@ use Helpers\Url;
 ?>
 	<div>
 		<p>
-			<iframe src="/grafana/dashboard-solo/db/natural-selection-2?theme=light&panelId=2&fullscreen" style="width: 100%;" height="300" frameborder="0" scrolling="no"></iframe>
+			<iframe src="/grafana/dashboard-solo/db/natural-selection-2?theme=light&panelId=2" style="width: 100%;" height="300" frameborder="0" scrolling="no"></iframe>
 		</p>
 		<div>
 			<p style="text-align:right; font-size: 12px;"><b>Last update</b>: <?php print($data['last_update']); ?>&nbsp; <button class="btn btn-success btn-xsm" onclick="pageReload()">Reload</button></p>
@@ -22,7 +22,7 @@ use Helpers\Url;
 						<th>Server Name</th>
 						<th>Map</th>
 						<th>Players</th>
-						<th>Version</th>
+						<th class="hidden-md">Version</th>
 						<th>Details</th>
 					</tr>
 				</thead>
@@ -40,8 +40,8 @@ use Helpers\Url;
 						<td><?php echo $v['serverName']; ?></td>
 						<td><?php echo $v['mapName']; ?></td>
 						<td><?php echo $v['numberOfPlayers']." / ".$v['maxPlayers']; ?></td>
-						<td><?php echo $v['version']; ?></td>
-						<td><a class="btn btn-primary btn-xsm" href="/server/details/<?php echo $v['host']; ?>/<?php echo $v['port']; ?>" role="button">info</a></td>	
+						<td class="hidden-md"><?php echo $v['version']; ?></td>
+						<td><a class="btn btn-primary btn-xsm" href="/server/details/<?php echo $v['host']; ?>/<?php echo $v['port']; ?>" role="button">details</a></td>
 					</tr>
 					<?php
 						}
@@ -58,7 +58,7 @@ use Helpers\Url;
 						<td><?php echo $v['serverName']; ?></td>
 						<td><?php echo $v['mapName']; ?></td>
 						<td><?php echo $v['numberOfPlayers']." / ".$v['maxPlayers']; ?></td>
-						<td class="text-warning"><?php echo $v['version']; ?></td>
+						<td class="text-warning hidden-md"><?php echo $v['version']; ?></td>
 						<td><a class="btn btn-primary btn-xsm" href="/server/details/<?php echo $v['host']; ?>/<?php echo $v['port']; ?>" role="button">info</a></td>	
 					</tr>
 					<?php
