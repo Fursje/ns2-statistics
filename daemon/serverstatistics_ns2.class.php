@@ -394,7 +394,6 @@ class serverstatistics_ns2 extends serverstatistics {
 		}
 	}
 	public function prepareServerHiveSkillAvg() {
-		print_r($this->SkillbyServerSize);
 		foreach ($this->SkillbyServerSize as $serverCategory => $cdata) {
 			foreach ($cdata as $serverSize => $data) {
 				$serverScore = array_sum($data) / count($data);

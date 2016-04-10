@@ -57,6 +57,7 @@ class grafana {
 			'expires' => '0001-01-01T00:00:00Z',
 			'created' => '0001-01-01T00:00:00Z'
 		);
+
 		$data['dashboard'] = array(
 			'annotations' => array(
 				'list' => array(),
@@ -68,7 +69,7 @@ class grafana {
 			'originalTitle' => $name,
 			'refresh' => '5m',
 			'rows' => $rows, // will be filled by another function
-			'schemaVersion' => 7,
+			'schemaVersion' => 12,
 			'sharedCrosshair' => false,
 			'style' => 'dark',
 			'tags' => array(),
@@ -254,49 +255,91 @@ class grafana {
 	public static function createPanel_ServerInfo($name,$host,$port, $id = null) {
 		$host = grafana::ip2field($host);
 		$data = array(
-			'editable' => true,
-			'fill' => 1,
-			'grid' => array(
-				'leftLogBase' => 2,
-				'rightLogBase' => 1,
-				'threshold1Color' => 'rgba(216, 200, 27, 0.27)',
-				'threshold2Color' => 'rgba(234, 112, 112, 0.22)',
+			"aliasColors"=> array(),
+			"bars"=> false,
+			"datasource"=> null,
+			"editable"=> true,
+			"error"=> false,
+			"fill"=> 1,
+			"grid"=> array(
+				"threshold1"=> null,
+				"threshold1Color"=> "rgba(216, 200, 27, 0.27)",
+				"threshold2"=> null,
+				"threshold2Color"=> "rgba(234, 112, 112, 0.22)"
 			),
-			'id' => $id,
-			'legend' => array(
-				'show' => false,
+			"id"=> $id,
+			"isNew"=> true,
+			"legend"=> array(
+				"avg"=> false,
+				"current"=> false,
+				"hideEmpty"=> true,
+				"hideZero"=> true,
+				"max"=> false,
+				"min"=> false,
+				"show"=> false,
+				"total"=> false,
+				"values"=> false
 			),
-			'lines' => true,
-			'linewidth' => 2,
-			'nullPointMode' => 'null as zero',
-			'pointradius' => 5,
-			'renderer' => 'flot',
-			'span' => 6,
-			'targets' => array(
-				
+			"lines"=> true,
+			"linewidth"=> 2,
+			"links"=> array(),
+			"nullPointMode"=> "null",
+			"percentage"=> false,
+			"pointradius"=> 5,
+			"points"=> false,
+			"renderer"=> "flot",
+			"seriesOverrides"=> array(),
+			"span"=> 6,
+			"stack"=> false,
+			"steppedLine"=> true,
+			"targets"=> array(),
+			"timeFrom"=> null,
+			"timeShift"=> null,
+			"title" => $name,
+			"tooltip"=> array(
+				"msResolution"=> false,
+				"shared"=> true,
+				"value_type"=> "cumulative"
 			),
-			'title' => $name,
-			'tooltip' => array(
-				'value_type' => 'cumulative',
+			"type"=> "graph",
+			"xaxis"=> array(
+				"show"=> true
 			),
-			'type' => 'graph',
-			'x-axis' => true,
-			'y-axis' => true,
-			'y_formats' => array('short','short'),
-			'steppedLine' => true,
+			"yaxes"=> array(
+				array(
+					"format"=> "none",
+					"label"=> null,
+					"logBase"=> 2,
+					"max"=> null,
+					"min"=> null,
+					"show"=> true
+				),
+				array(
+					"format"=> "short",
+					"label"=> null,
+					"logBase"=> 1,
+					"max"=> null,
+					"min"=> null,
+					"show"=> true
+			))
 		);
+
 		$targets[] = array(
 			'refId' => 'A',
 			'target' => sprintf("alias(server.ns2.%s.%d.ent_count, 'entities')",$host,$port),
+			"textEditor"=> true
 		);
 		$targets[] = array(
 			'refId' => 'B',
 			'target' => sprintf("alias(server.ns2.%s.%d.numberOfPlayers, 'Players')",$host,$port),
+			"textEditor"=> true
 		);
 		$targets[] = array(
 			'refId' => 'C',
 			'target' => sprintf("alias(server.ns2.%s.%d.tickrate, 'tickrate')",$host,$port),
+			"textEditor"=> true
 		);
+
 		$data['targets'] = $targets;
 		return $data;
 	}
@@ -304,52 +347,95 @@ class grafana {
 	public static function createPanel_ServerPerformance($name,$host,$port,$id=null) {
 		$host = grafana::ip2field($host);
 		$data = array(
-			'editable' => true,
-			'fill' => 1,
-			'grid' => array(
-				'leftLogBase' => 2,
-				'rightLogBase' => 1,
-				'threshold1Color' => 'rgba(216, 200, 27, 0.27)',
-				'threshold2Color' => 'rgba(234, 112, 112, 0.22)',
+			"aliasColors"=> array(),
+			"bars"=> false,
+			"datasource"=> null,
+			"editable"=> true,
+			"error"=> false,
+			"fill"=> 1,
+			"grid"=> array(
+				"threshold1"=> null,
+				"threshold1Color"=> "rgba(216, 200, 27, 0.27)",
+				"threshold2"=> null,
+				"threshold2Color"=> "rgba(234, 112, 112, 0.22)"
 			),
-			'id' => $id,
-			'legend' => array(
-				'show' => false,
+			"id"=> $id,
+			"isNew"=> true,
+			"legend"=> array(
+				"avg"=> false,
+				"current"=> false,
+				"hideEmpty"=> true,
+				"hideZero"=> true,
+				"max"=> false,
+				"min"=> false,
+				"show"=> false,
+				"total"=> false,
+				"values"=> false
 			),
-			'lines' => true,
-			'linewidth' => 2,
-			'nullPointMode' => 'null as zero',
-			'pointradius' => 5,
-			'renderer' => 'flot',
-			'span' => 6,
-			'targets' => array(
-				
+			"lines"=> true,
+			"linewidth"=> 2,
+			"links"=> array(),
+			"nullPointMode"=> "null as zero",
+			"percentage"=> false,
+			"pointradius"=> 5,
+			"points"=> false,
+			"renderer"=> "flot",
+			"seriesOverrides"=> array(),
+			"span"=> 6,
+			"stack"=> false,
+			"steppedLine"=> true,
+			"targets"=> array(),
+			"timeFrom"=> null,
+			"timeShift"=> null,
+			"title"=> $name." - Performance",
+			"tooltip"=> array(
+				"msResolution"=> false,
+				"shared"=> true,
+				"value_type"=> "cumulative"
 			),
-			'title' => $name." - Performance",
-			'tooltip' => array(
-				'value_type' => 'cumulative',
+			"type"=> "graph",
+			"xaxis"=> array(
+				"show"=> true
 			),
-			'type' => 'graph',
-			'x-axis' => true,
-			'y-axis' => true,
-			'y_formats' => array('short','short'),
-			'steppedLine' => true,
-		);	
+			"yaxes"=> array(
+				array(
+					"format"=> "none",
+					"label"=> null,
+					"logBase"=> 2,
+					"max"=> null,
+					"min"=> null,
+					"show"=> true
+				),
+				array(
+					"format"=> "short",
+					"label"=> null,
+					"logBase"=> 1,
+					"max"=> null,
+					"min"=> null,
+					"show"=> true
+				)
+			)
+		);
+
 		$targets[] = array(
 			'refId' => 'A',
 			'target' => sprintf("aliasByMetric(server.ns2.%s.%d.PerfScorewithQuality)",$host,$port),
+			"textEditor"=> true
 		);
 		$targets[] = array(
 			'refId' => 'B',
 			'target' => sprintf("aliasByMetric(server.ns2.%s.%d.currentPerfScore)",$host,$port),
+			"textEditor"=> true
 		);
 		$targets[] = array(
 			'refId' => 'C',
 			'target' => sprintf("aliasByMetric(server.ns2.%s.%d.perfQuality)",$host,$port),
+			"textEditor"=> true
 		);
 		$targets[] = array(
 			'refId' => 'D',
 			'target' => sprintf("aliasByMetric(server.ns2.%s.%d.real_tickrate)",$host,$port),
+			"textEditor"=> true
 		);
 
 		$data['targets'] = $targets;
