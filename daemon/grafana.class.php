@@ -423,7 +423,11 @@ class grafana {
 			'target' => sprintf("alias(server.ns2.%s.%d.tickrate, 'tickrate')",$host,$port),
 			"textEditor"=> true
 		);
-
+		$targets[] = array(
+			'refId' => 'D',
+			'target' => sprintf("aliasByMetric(server.ns2.%s.%d.real_tickrate)",$host,$port),
+			"textEditor"=> true
+		);
 		$data['targets'] = $targets;
 		return $data;
 	}
@@ -487,9 +491,9 @@ class grafana {
 				array(
 					"format"=> "none",
 					"label"=> null,
-					"logBase"=> 2,
-					"max"=> null,
-					"min"=> null,
+					"logBase"=> 1,
+					"max"=> 100,
+					"min"=> 0,
 					"show"=> true
 				),
 				array(
@@ -518,11 +522,7 @@ class grafana {
 			'target' => sprintf("aliasByMetric(server.ns2.%s.%d.perfQuality)",$host,$port),
 			"textEditor"=> true
 		);
-		$targets[] = array(
-			'refId' => 'D',
-			'target' => sprintf("aliasByMetric(server.ns2.%s.%d.real_tickrate)",$host,$port),
-			"textEditor"=> true
-		);
+
 
 		$data['targets'] = $targets;
 		return $data;
