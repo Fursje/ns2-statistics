@@ -493,7 +493,7 @@ class grafana {
 					"label"=> null,
 					"logBase"=> 1,
 					"max"=> 100,
-					"min"=> 0,
+					"min"=> null,
 					"show"=> true
 				),
 				array(
