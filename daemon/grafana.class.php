@@ -377,7 +377,7 @@ class grafana {
 				array(
 					"alias" => "Total Players - Last week",
 					"fillBelowTo" => "Total Players",
-					"lines" => false,
+					"lines" => true,
 					"fill" => 0,
 					"color" => "#1F78C1"
 				),
