@@ -379,7 +379,8 @@ class grafana {
 					"fillBelowTo" => "Total Players",
 					"lines" => true,
 					"fill" => 0,
-					"color" => "#1F78C1"
+					"color" => "#1F78C1",
+					"linewidth" => 1
 				),
 				array(
 					"alias"=> "Total Slots",
