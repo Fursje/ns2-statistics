@@ -368,7 +368,7 @@ class grafana {
 			"lines"=> true,
 			"linewidth"=> 2,
 			"links"=> array(),
-			"nullPointMode"=> "null",
+			"nullPointMode"=> "null as zero",
 			"percentage"=> false,
 			"pointradius"=> 5,
 			"points"=> false,
