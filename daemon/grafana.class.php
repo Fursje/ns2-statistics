@@ -333,7 +333,109 @@ class grafana {
 		$data['targets'] = $targets;
 		return $data;
 	}
+	public static function createPanel_HostPlayersTimeShift($name,$host, $id = null) {
+		$host = grafana::ip2field($host);
+		$data = array(
+			"aliasColors"=> array(),
+			"bars"=> false,
+			"datasource"=> null,
+			"editable"=> true,
+			"error"=> false,
+			"fill"=> 1,
+			"grid"=> array(
+				'leftLogBase' => 2,
+				'rightLogBase' => 1,
+				"threshold1"=> null,
+				"threshold1Color"=> "rgba(216, 200, 27, 0.27)",
+				"threshold2"=> null,
+				"threshold2Color"=> "rgba(234, 112, 112, 0.22)"
+			),
+			"id"=> $id,
+			"isNew"=> true,
+			"legend"=> array(
+				"avg"=> true,
+				"current"=> true,
+				"hideEmpty"=> true,
+				"hideZero"=> true,
+				"max"=> true,
+				"min"=> true,
+				"show"=> false,
+				"total"=> false,
+				"values"=> true,
+				"alignAsTable" => true,
+				"rightSide" => false
+			),
+			"lines"=> true,
+			"linewidth"=> 2,
+			"links"=> array(),
+			"nullPointMode"=> "null",
+			"percentage"=> false,
+			"pointradius"=> 5,
+			"points"=> false,
+			"renderer"=> "flot",
+			"seriesOverrides"=> array(
+				array(
+					"alias" => "Total Players - Last week",
+					"fillBelowTo" => "Total Players",
+					"lines" => false,
+					"fill" => 0,
+					"color" => "#1F78C1"
+				),
+				array(
+					"alias"=> "Total Slots",
+					"fill"=> 0
+				),
+			),
+			"span"=> 12,
+			"stack"=> false,
+			"steppedLine"=> false,
+			"targets"=> array(),
+			"timeFrom"=> "7d",
+			"timeShift"=> null,
+			"title" => 'Players on '.$name,
+			"tooltip"=> array(
+				"msResolution"=> false,
+				"shared"=> true,
+				"value_type"=> "cumulative"
+			),
+			"type"=> "graph",
+			"xaxis"=> array(
+				"show"=> true
+			),
+			"yaxes"=> array(
+				array(
+					"format"=> "none",
+					"label"=> null,
+					"logBase"=> 1,
+					"max"=> null,
+					"min"=> null,
+					"show"=> true
+				),
+				array(
+					"format"=> "short",
+					"label"=> null,
+					"logBase"=> 1,
+					"max"=> null,
+					"min"=> null,
+					"show"=> false
+			))
+		);
+		$targets[] = array(
+			'refId' => 'A',
+			'target' => sprintf("alias(keepLastValue(sumSeries(server.ns2.%s.*.maxPlayers), 2), 'Total Slots')",$host),
+		);
+		$targets[] = array(
+			'refId' => 'B',
+			'target' => sprintf("alias(keepLastValue(sumSeries(server.ns2.%s.*.numberOfPlayers), 2), 'Total Players')",$host),
+		);
+		$targets[] = array(
+			'refId' => 'C',
+			'target' => sprintf("alias(timeShift(keepLastValue(sumSeries(server.ns2.%s.*.numberOfPlayers), 2), '7d'), 'Total Players - Last week')",$host),
+		);
 
+		$data['targets'] = $targets;
+		return $data;
+	}
 	public static function createPanel_ServerInfo($name,$host,$port, $id = null) {
 		$host = grafana::ip2field($host);
 		$data = array(

@@ -93,7 +93,7 @@ class serverstatistics_ns2 extends serverstatistics {
 			$panels = array();
 
 			$this->jsonData['hosts'][$value['host']]['graphs']['players_id'] = $id_counter;
-			$panels[] = $this->grafana->createPanel_HostPlayers($value['host'],$value['host'],$id_counter );
+			$panels[] = $this->grafana->createPanel_HostPlayersTimeShift($value['host'],$value['host'],$id_counter );
 			$id_counter++;
 
 			$rows[] = $this->grafana->createRow($value['host'], 250, $panels);
