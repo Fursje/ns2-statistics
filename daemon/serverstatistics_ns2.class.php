@@ -429,6 +429,7 @@ class serverstatistics_ns2 extends serverstatistics {
 			'/^(nsl)$/',
 			'/^(last stand)$/',
 			'/^(siege)$/',
+			'/^(defense)$/',
 			'/^(faded).*$/',
 			'/^(rookie_only)$/',
 			'/^(rookie)$/'
