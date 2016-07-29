@@ -1,4 +1,4 @@
-# ns-statistics
+# Natural Selection II - Statistics
 Simple Game Statistics stored in graphite, displayed in grafana. Live on http://ns2servers.net/
 
 # Dependencies
