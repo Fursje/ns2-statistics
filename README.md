@@ -1,5 +1,5 @@
 # ns-statistics
-Simple Game Statistics stored in graphite, displayed in grafana.
+Simple Game Statistics stored in graphite, displayed in grafana. Live on http://ns2servers.net/
 
 # Dependencies
 * Graphite
