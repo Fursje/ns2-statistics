@@ -115,7 +115,7 @@ class serverstatistics_ns2 extends serverstatistics {
 			$rows[] = $this->grafana->createRow($value['host'], 250, $panels);
 		}
 
-		$dashboard_playersport = $this->grafana->prepareDashboardDefault('Natural Selection 2 - ServerPort - Players (autogen)','natural-selection-2-server-playersport-autogen',$rows);
+		$dashboard_playersport = $this->grafana->prepareDashboardDefault('Natural Selection 2 - Server - Playersport (autogen)','natural-selection-2-server-playersport-autogen',$rows);
 		$this->grafana->prepareDashboard($dashboard_playersport);
 
 		// Create Dashboard Smokeping
