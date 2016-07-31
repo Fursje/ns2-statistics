@@ -76,6 +76,7 @@ $hooks = Hooks::get();
 				  <ul class="dropdown-menu">
 				    <li><a href="/grafana/dashboard/db/natural-selection-2?theme=light">Generic</a></li>
 				    <li><a href="/grafana/dashboard/db/natural-selection-2-gametypes?theme=light">Game modes</a></li>
+				    <li><a href="/grafana/dashboard/db/natural-selection-2-patch-impact?theme=light">Patch Impact</a></li>
 				  </ul>
 				</li>
 				<li><a href="/workshop">Workshop Backup</a>
