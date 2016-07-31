@@ -7,7 +7,7 @@ use Core\Language;
 
 if (isset($data['server_details'])) {
 	foreach ($data['panels'] as $panel_frame) {
-		print '<div>'.$panel_frame.'</div>';
+		print "<div>".$panel_frame."</div>\n";
 	}
   print "<div>\n";
   print $data['smokeping_panel'];

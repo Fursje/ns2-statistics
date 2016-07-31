@@ -60,6 +60,7 @@ class Servers extends Controller
 		$data['port'] = $port;
 
 		$panel_url = '<iframe src="/grafana/dashboard-solo/db/natural-selection-2-servers-autogen?panelId=%d&theme=light" style="width: 100%%;" height="250" frameborder="0" scrolling="no"></iframe>';
+		$panel_players = '<iframe src="/grafana/dashboard-solo/db/natural-selection-2-server-playersport-autogen?panelId=%d&theme=light" style="width: 100%%;" height="200" frameborder="0" scrolling="no"></iframe>';
 		$panel_smokeping = '<iframe src="/grafana/dashboard-solo/db/natural-selection-2-server-smokeping-autogen?panelId=%d&theme=light" style="width: 100%%;" height="300" frameborder="0" scrolling="no"></iframe>';
 		$panel_hivescore = '<iframe src="/grafana/dashboard-solo/db/natural-selection-2-server-hivescore-autogen?panelId=%d&theme=light" style="width: 100%%;" height="250" frameborder="0" scrolling="no"></iframe>';
 
@@ -70,6 +71,7 @@ class Servers extends Controller
 				$data['server_details'] = $srv_data['servers'][$server];
 				$data['title'] = sprintf("Server Details of %s",$data['server_details']['serverName']);
 				$data['description'] = "Natural Selection II - ".$data['title'];
+				$data['panels']['players'] = sprintf($panel_players,$data['server_details']['graphs']['playersport_id']);
 				$data['panels']['info'] = sprintf($panel_url,$data['server_details']['graphs']['info_id']);
 				$data['panels']['perf'] = sprintf($panel_url,$data['server_details']['graphs']['perf_id']);
 				$data['panels']['hivescore'] = sprintf($panel_hivescore,$data['server_details']['graphs']['hivescore_id']);

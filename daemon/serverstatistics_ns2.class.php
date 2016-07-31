@@ -102,6 +102,22 @@ class serverstatistics_ns2 extends serverstatistics {
 		$dashboard_players = $this->grafana->prepareDashboardDefault('Natural Selection 2 - Server - Players (autogen)','natural-selection-2-server-players-autogen',$rows);
 		$this->grafana->prepareDashboard($dashboard_players);
 
+		// Create Dashboard players by IP & Port
+		$id_counter = 1;
+		$rows = array();
+		foreach ($this->jsonData['servers'] as $host => $value) {
+			$panels = array();
+
+			$this->jsonData['hosts'][$value['host']]['graphs']['playersport_id'] = $id_counter;
+			$panels[] = $this->grafana->createPanel_HostPlayersTimeShift($value['host'],$value['host'],$id_counter,$value['port']);
+			$id_counter++;
+
+			$rows[] = $this->grafana->createRow($value['host'], 250, $panels);
+		}
+
+		$dashboard_playersport = $this->grafana->prepareDashboardDefault('Natural Selection 2 - ServerPort - Players (autogen)','natural-selection-2-server-playersport-autogen',$rows);
+		$this->grafana->prepareDashboard($dashboard_playersport);
+
 		// Create Dashboard Smokeping
 		$id_counter = 1;
 		$rows = array();
@@ -140,6 +156,7 @@ class serverstatistics_ns2 extends serverstatistics {
 		if ($this->dev_mode == False) {
 			$this->grafana->sendDashboard($dashboard_info['meta']['slug'].".json");
 			$this->grafana->sendDashboard($dashboard_players['meta']['slug'].".json");
+			$this->grafana->sendDashboard($dashboard_playersport['meta']['slug'].".json");
 			$this->grafana->sendDashboard($dashboard_smokeping['meta']['slug'].".json");
 			$this->grafana->sendDashboard($dashboard_serverhivescore['meta']['slug'].".json");
 		}

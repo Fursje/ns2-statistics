@@ -289,7 +289,7 @@ class grafana {
 		$data['targets'] = $targets;
 		return $data;
 	}
-	public static function createPanel_HostPlayers($name,$host, $id = null) {
+	public static function createPanel_HostPlayers($name,$host, $id = null, $port = "*") {
 		$host = grafana::ip2field($host);
 		$data = array(
 			'editable' => true,
@@ -323,17 +323,17 @@ class grafana {
 		);
 		$targets[] = array(
 			'refId' => 'A',
-			'target' => sprintf("alias(keepLastValue(sumSeries(server.ns2.%s.*.maxPlayers), 2), 'Total Slots')",$host),
+			'target' => sprintf("alias(keepLastValue(sumSeries(server.ns2.%s.%s.maxPlayers), 2), 'Total Slots')",$host,$port),
 		);
 		$targets[] = array(
 			'refId' => 'B',
-			'target' => sprintf("alias(keepLastValue(sumSeries(server.ns2.%s.*.numberOfPlayers), 2), 'Total Players')",$host),
+			'target' => sprintf("alias(keepLastValue(sumSeries(server.ns2.%s.%s.numberOfPlayers), 2), 'Total Players')",$host,$port),
 		);
 
 		$data['targets'] = $targets;
 		return $data;
 	}
-	public static function createPanel_HostPlayersTimeShift($name,$host, $id = null) {
+	public static function createPanel_HostPlayersTimeShift($name,$host, $id = null, $port = "*") {
 		$host = grafana::ip2field($host);
 		$data = array(
 			"aliasColors"=> array(),
@@ -423,15 +423,15 @@ class grafana {
 		);
 		$targets[] = array(
 			'refId' => 'A',
-			'target' => sprintf("alias(keepLastValue(sumSeries(server.ns2.%s.*.maxPlayers), 2), 'Total Slots')",$host),
+			'target' => sprintf("alias(keepLastValue(sumSeries(server.ns2.%s.%s.maxPlayers), 2), 'Total Slots')",$host,$port),
 		);
 		$targets[] = array(
 			'refId' => 'B',
-			'target' => sprintf("alias(keepLastValue(sumSeries(server.ns2.%s.*.numberOfPlayers), 2), 'Total Players')",$host),
+			'target' => sprintf("alias(keepLastValue(sumSeries(server.ns2.%s.%s.numberOfPlayers), 2), 'Total Players')",$host, $port),
 		);
 		$targets[] = array(
 			'refId' => 'C',
-			'target' => sprintf("alias(timeShift(keepLastValue(sumSeries(server.ns2.%s.*.numberOfPlayers), 2), '7d'), 'Total Players - Last week')",$host),
+			'target' => sprintf("alias(timeShift(keepLastValue(sumSeries(server.ns2.%s.%s.numberOfPlayers), 2), '7d'), 'Total Players - Last week')",$host, $port),
 		);
 
 		$data['targets'] = $targets;
