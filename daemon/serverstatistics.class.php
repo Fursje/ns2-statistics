@@ -173,7 +173,7 @@ class serverstatistics {
 				$this->print_cli('info', 'Updating Masterlist');
 				$this->getServers();
 				$this->clearBlacklist();
-				$this->serverList = array(array('85.195.247.117','27034'));
+				#$this->serverList = array(array('85.195.247.117','27034'));
 				#$this->serverList = array(array('89.105.209.250','27021'),array('136.243.170.231','27036'));
 				//85.14.226.223:27016
 				#$this->serverList = array(array('80.127.150.123','29011'));
@@ -187,7 +187,7 @@ class serverstatistics {
 				if ($this->onBlacklist($srv[0],$srv[1])) { continue; }
 
 				if (($serverDetails = $this->getDetails($srv[0],$srv[1])) !== FALSE) {
-					print_r($serverDetails);
+					#print_r($serverDetails);
 					$p_msg = sprintf("Found [%s:%s] [%s] [%s] [%d/%d]",$serverDetails['host'],$serverDetails['port'], $serverDetails['info']['serverName'], $serverDetails['info']['mapName'],$serverDetails['info']['numberOfPlayers'],$serverDetails['info']['maxPlayers']);
 					$this->print_cli('info', $p_msg);
 					
