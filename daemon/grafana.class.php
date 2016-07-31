@@ -393,7 +393,7 @@ class grafana {
 			"targets"=> array(),
 			"timeFrom"=> "7d",
 			"timeShift"=> null,
-			"title" => 'Players on '.$name,
+			"title" => $name. ' - Players',
 			"tooltip"=> array(
 				"msResolution"=> false,
 				"shared"=> true,
