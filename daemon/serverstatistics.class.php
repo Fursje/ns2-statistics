@@ -31,10 +31,11 @@ class serverstatistics {
 	protected $ServerCountryCount = array('total'=>array(), 'active_players'=>array(), 'player_count'=>array());
 	protected $ServerOS = array();
 
-	protected $masterlistQuery = "\\appid\\4920";
+	protected $steam_web_api_url = "https://api.steampowered.com/IGameServersService/GetServerList/v1/?key=%s&format=json&filter=%s";
+	protected $steam_web_api_key = "";
+	protected $masterlistQuery = "appid\4920";
+	#protected $masterlistQuery = "\\appid\\4920";
 	#private $masterlistQuery = "\\appid\\4920\\empty\\1";
-
-
 
 	public function __construct() {	
 		#require_once(__DIR__."/grafana.class.php");
@@ -302,10 +303,26 @@ class serverstatistics {
 	
 	}
 	
-	public function getServers() {
+	public function getServers_old() {
 		$master = new MasterServer(MasterServer::SOURCE_MASTER_SERVER);
 		$this->serverList = $servers = $master->getServers(MasterServer::REGION_ALL,$this->masterlistQuery , true );
 		$this->serverList_CacheTime = time();
+	}
+
+	public function getServers() {
+		// Using steam web api
+		$return_old_format = array();
+		$query_url = sprintf($this->steam_web_api_url,$this->steam_web_api_key,$this->masterlistQuery);
+		if (FALSE !== ($tmp_m = file_get_contents($query_url))) {
+			$q_data = json_decode($tmp_m,True);
+			foreach ($q_data['response']['servers'] as $k=>$v) {
+				list($host,$port) = explode(":",$v["addr"]);
+				$return_old_format[] = array($host,$port);
+			}
+			$this->serverList = $return_old_format;
+		} else {
+			$this->print_cli("info","getServers: something went wrong;");
+		}
 	}
 
 	public function getDetails($host,$port,$retry = 3, $getPlayers = False, $getRules = True) {
