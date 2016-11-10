@@ -31,7 +31,7 @@ class serverstatistics {
 	protected $ServerCountryCount = array('total'=>array(), 'active_players'=>array(), 'player_count'=>array());
 	protected $ServerOS = array();
 
-	protected $steam_web_api_url = "https://api.steampowered.com/IGameServersService/GetServerList/v1/?key=%s&format=json&filter=%s";
+	protected $steam_web_api_url = "https://api.steampowered.com/IGameServersService/GetServerList/v1/?key=%s&format=json&filter=%s&limit=2000";
 	protected $steam_web_api_key = "";
 	protected $masterlistQuery = "appid\4920";
 	#protected $masterlistQuery = "\\appid\\4920";
